@@ -1,7 +1,13 @@
 // Thin fetch wrapper around the backend API.
 import { getAccessToken } from "./auth.js";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+if (!BASE_URL) {
+  throw new Error(
+    "VITE_API_BASE_URL is not set. Add it to frontend/.env (local) or frontend/.env.docker (Docker build)."
+  );
+}
 
 async function request(path, { method = "GET", body, auth = true } = {}) {
   const headers = { "Content-Type": "application/json" };

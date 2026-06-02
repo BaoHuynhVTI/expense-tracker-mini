@@ -7,10 +7,13 @@ RUN npm ci
 
 COPY . .
 
-ARG VITE_API_BASE_URL=http://localhost:8000/api
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-
-RUN npm run build
+# Vite reads .env.production at build time; source is frontend/.env.docker on the server.
+RUN if [ ! -f .env.docker ]; then \
+      echo "ERROR: frontend/.env.docker is required for Docker build." >&2; \
+      exit 1; \
+    fi \
+    && cp .env.docker .env.production \
+    && npm run build
 
 FROM nginx:alpine
 

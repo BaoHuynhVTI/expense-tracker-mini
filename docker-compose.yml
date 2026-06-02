@@ -6,11 +6,8 @@
 #
 # Production:
 #   cp backend/.env.docker.example backend/.env.docker
-#   cp frontend/.env.docker.example frontend/.env.docker   # optional, for build arg
+#   cp frontend/.env.docker.example frontend/.env.docker  # required; set VITE_API_BASE_URL
 #   docker compose up --build -d
-#
-# UI:  http://localhost:8080
-# API: http://localhost:8000/api
 
 services:
   db:
@@ -40,10 +37,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    build:
-      context: ./frontend
-      args:
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000/api}
+    build: ./frontend
     ports:
       - "8080:80"
     depends_on:
