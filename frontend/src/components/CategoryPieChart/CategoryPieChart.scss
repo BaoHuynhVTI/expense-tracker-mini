@@ -1,0 +1,41 @@
+@use "../../variables" as *;
+
+.category-pie-chart {
+  width: 100%;
+
+  .recharts-default-legend {
+    font-size: 0.85rem;
+  }
+}
+
+.category-pie-chart__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.category-pie-chart__tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: $space-sm $space-md;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 12px rgba(74, 63, 53, 0.12);
+}
+
+.category-pie-chart__tooltip-name {
+  font-weight: 700;
+  color: $color-text;
+}
+
+.category-pie-chart__tooltip-pct {
+  color: $color-muted;
+}
+
+.category-pie-chart__total {
+  margin: 0;
+  text-align: center;
+  font-size: 0.85rem;
+}

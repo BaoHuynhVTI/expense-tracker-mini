@@ -1,3 +1,4 @@
+import CategoryPieChart from "../../components/CategoryPieChart/CategoryPieChart.jsx";
 import CreditCardList from "../../components/CreditCardList/CreditCardList.jsx";
 import Loading from "../../components/Loading/Loading.jsx";
 import MonthlyChart from "../../components/MonthlyChart/MonthlyChart.jsx";
@@ -20,6 +21,11 @@ export default function Dashboard() {
       {error && <div className="alert alert--error">{error}</div>}
 
       <SummaryCards summary={summary} />
+
+      <section className="panel">
+        <h2 className="panel__title">Spending by category</h2>
+        <CategoryPieChart totalsByCategory={summary?.totals_by_category} />
+      </section>
 
       <section className="panel">
         <h2 className="panel__title">Income vs. spending (last 6 months)</h2>
