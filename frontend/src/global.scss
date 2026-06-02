@@ -1,0 +1,221 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+body {
+  background: $color-bg;
+  color: $color-text;
+}
+
+// ---------------------------------------------------------------------------
+// Shared design-system primitives (reused across components & views)
+// ---------------------------------------------------------------------------
+
+// Buttons
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-xs;
+  padding: $space-sm $space-md;
+  border: 1px solid transparent;
+  border-radius: $radius-sm;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn--primary {
+  background: $color-primary;
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: $color-primary-dark;
+  }
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: $color-border;
+  color: $color-text;
+
+  &:hover:not(:disabled) {
+    background: $color-bg;
+  }
+}
+
+.btn--danger {
+  background: $color-danger;
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: $color-danger-dark;
+  }
+}
+
+.btn--small {
+  padding: $space-xs $space-sm;
+  font-size: 0.8rem;
+}
+
+// Cards
+.card {
+  @include card-surface;
+  padding: $space-lg;
+}
+
+// Form field primitive (used by InputComponent & SelectComponent)
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.input-field__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $color-muted;
+}
+
+.input-field__hint {
+  font-size: 0.75rem;
+  color: $color-muted;
+}
+
+.input-field__error {
+  font-size: 0.78rem;
+  color: $color-danger;
+}
+
+.input-field__control {
+  width: 100%;
+  padding: $space-sm $space-md;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  font-size: 0.95rem;
+  color: $color-text;
+  background: #fff;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba(214, 78, 56, 0.18);
+  }
+}
+
+// Alerts
+.alert {
+  padding: $space-sm $space-md;
+  border-radius: $radius-sm;
+  font-size: 0.9rem;
+  margin-bottom: $space-md;
+}
+
+.alert--error {
+  background: #f7e6e0;
+  color: $color-danger-dark;
+  border: 1px solid #e3c2b8;
+}
+
+.alert--success {
+  background: #eef0e0;
+  color: #4f5733;
+  border: 1px solid #d3d8b6;
+}
+
+.muted {
+  color: $color-muted;
+  font-size: 0.95rem;
+}
+
+// ---------------------------------------------------------------------------
+// Shared page/panel layout primitives (reused across views)
+// ---------------------------------------------------------------------------
+.panel {
+  @include card-surface;
+  padding: $space-lg;
+}
+
+.panel + .panel {
+  margin-top: $space-lg;
+}
+
+.panel__header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  margin-bottom: $space-md;
+}
+
+.panel__bar {
+  @include flex-between;
+  gap: $space-md;
+  margin-bottom: $space-md;
+
+  .panel__title {
+    margin: 0;
+  }
+}
+
+.panel__title {
+  margin: 0 0 $space-md;
+  font-size: 1.1rem;
+  color: $color-text;
+}
+
+// Two-column "form on the left, list on the right" layout.
+.page-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: $space-lg;
+  align-items: start;
+
+  @include tablet-down {
+    grid-template-columns: 1fr;
+  }
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 180px;
+  gap: $space-sm;
+  margin-bottom: $space-md;
+
+  @include mobile-down {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Shared entry-form layout (expense / income / debt forms)
+.expense-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+
+  .btn {
+    margin-top: $space-sm;
+    width: 100%;
+  }
+}
+
+.expense-form__empty {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  align-items: flex-start;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-md;
+
+  @include mobile-down {
+    grid-template-columns: 1fr;
+  }
+}

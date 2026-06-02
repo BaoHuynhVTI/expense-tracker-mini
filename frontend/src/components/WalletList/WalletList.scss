@@ -1,0 +1,44 @@
+@use "../../variables" as *;
+
+.wallet-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: $space-md;
+}
+
+.wallet-card {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  padding: $space-md;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: #fff;
+}
+
+.wallet-card__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.wallet-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wallet-card__name {
+  font-weight: 600;
+}
+
+.wallet-card__balance {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.wallet-card__balance--negative {
+  color: $color-danger;
+}

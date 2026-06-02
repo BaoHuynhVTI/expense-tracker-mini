@@ -1,0 +1,45 @@
+@use "../../variables" as *;
+
+.credit-card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: $space-md;
+}
+
+.credit-card-mini {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-sm;
+  padding: $space-md;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: #fff;
+}
+
+.credit-card-mini__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.credit-card-mini__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.credit-card-mini__name {
+  font-weight: 600;
+}
+
+.credit-card-mini__balance {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: $color-muted;
+}
+
+.credit-card-mini__balance--owed {
+  color: $color-danger;
+}

@@ -1,0 +1,64 @@
+@use "../../variables" as *;
+@use "../../mixins" as *;
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-md;
+  background: linear-gradient(135deg, #eef2ff 0%, #f4f5f7 100%);
+}
+
+.auth-card {
+  @include card-surface;
+  width: 100%;
+  max-width: 400px;
+  padding: $space-xl;
+  box-shadow: $shadow-md;
+}
+
+.auth-card__title {
+  margin: 0 0 $space-lg;
+  font-size: 1.5rem;
+  text-align: center;
+  color: $color-text;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: $space-xs;
+  margin-bottom: $space-lg;
+  background: $color-bg;
+  padding: $space-xs;
+  border-radius: $radius-sm;
+}
+
+.auth-tabs__tab {
+  flex: 1;
+  padding: $space-sm;
+  border: none;
+  background: transparent;
+  border-radius: $radius-sm;
+  font-weight: 600;
+  color: $color-muted;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &.is-active {
+    background: $color-surface;
+    color: $color-primary;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+
+  .btn {
+    margin-top: $space-sm;
+    width: 100%;
+  }
+}

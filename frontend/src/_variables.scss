@@ -1,0 +1,39 @@
+// Vintage color palette (from reference swatches)
+// #E19E6A tan-orange · #6F6F4B olive · #E8D4B9 cream
+// #D64E38 terracotta · #F2B03F mustard · #702C37 burgundy
+$color-bg: #efe3d7; // aged-paper background
+$color-surface: #fbf5ec; // cards / panels
+$color-text: #3d2f31; // dark warm ink
+$color-muted: #8a7b6b;
+$color-border: #e3d5c1;
+
+$color-primary: #d64e38; // terracotta
+$color-primary-dark: #b23e2c;
+$color-danger: #702c37; // burgundy (destructive)
+$color-danger-dark: #57212a;
+$color-success: #6f6f4b; // olive
+$color-accent: #f2b03f; // mustard
+$color-accent-2: #e19e6a; // tan-orange
+
+// Overlay (modals)
+$color-overlay: rgba(61, 47, 49, 0.55);
+
+// Spacing scale
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 16px;
+$space-lg: 24px;
+$space-xl: 32px;
+
+// Border radius
+$radius-sm: 6px;
+$radius-md: 10px;
+$radius-lg: 16px;
+
+// Shadows (warm-tinted)
+$shadow-sm: 0 1px 2px rgba(61, 47, 49, 0.12);
+$shadow-md: 0 8px 28px rgba(61, 47, 49, 0.2);
+
+// Breakpoints
+$bp-tablet: 768px;
+$bp-mobile: 480px;

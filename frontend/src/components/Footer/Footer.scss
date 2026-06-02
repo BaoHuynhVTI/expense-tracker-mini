@@ -1,0 +1,17 @@
+@use "../../variables" as *;
+@use "../../mixins" as *;
+
+.footer {
+  background: $color-surface;
+  border-top: 1px solid $color-border;
+  margin-top: $space-xl;
+}
+
+.footer__inner {
+  @include flex-between;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: $space-md $space-lg;
+  font-size: 0.85rem;
+  color: $color-muted;
+}

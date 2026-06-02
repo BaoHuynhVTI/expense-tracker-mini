@@ -1,0 +1,33 @@
+@use "../../variables" as *;
+@use "../../mixins" as *;
+
+.expense-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+
+  .btn {
+    margin-top: $space-sm;
+    width: 100%;
+  }
+}
+
+.expense-form__hint {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.expense-form__hint {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-md;
+
+  @include mobile-down {
+    grid-template-columns: 1fr;
+  }
+}

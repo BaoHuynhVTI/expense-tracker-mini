@@ -1,0 +1,12 @@
+@use "../../variables" as *;
+
+.confirm-dialog__message {
+  margin: 0 0 $space-lg;
+  color: $color-text;
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-sm;
+}

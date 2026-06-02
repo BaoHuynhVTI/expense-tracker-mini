@@ -1,0 +1,41 @@
+@use "../../variables" as *;
+@use "../../mixins" as *;
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: $space-md;
+  margin-bottom: $space-lg;
+}
+
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.summary-card__label {
+  font-size: 0.85rem;
+  color: $color-muted;
+  font-weight: 600;
+}
+
+.summary-card__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $color-text;
+}
+
+.summary-card__value--income {
+  color: $color-success;
+}
+
+.summary-card__value--expense {
+  color: $color-danger;
+}
+
+.summary-card__hint {
+  font-size: 0.75rem;
+  color: $color-muted;
+  line-height: 1.3;
+}

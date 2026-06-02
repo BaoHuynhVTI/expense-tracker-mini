@@ -1,0 +1,92 @@
+"""Expense URL routes (mounted under /api/)."""
+from django.urls import path
+
+from .views import (
+    CategoryDetailView,
+    CategoryListCreateView,
+    CreditChargeDetailView,
+    CreditChargeListCreateView,
+    CreditDetailView,
+    CreditListCreateView,
+    CreditPaymentDetailView,
+    CreditPaymentListCreateView,
+    CreditWithActivityListView,
+    DebtDetailView,
+    DebtListCreateView,
+    DebtPaymentDetailView,
+    DebtPaymentListCreateView,
+    ExpenseDetailView,
+    ExpenseListCreateView,
+    HealthView,
+    IncomeDetailView,
+    IncomeListCreateView,
+    IncomeSourceDetailView,
+    IncomeSourceListCreateView,
+    MonthlyStatsView,
+    SummaryView,
+    WalletDetailView,
+    WalletListCreateView,
+)
+
+urlpatterns = [
+    path("health/", HealthView.as_view(), name="health"),
+    path("categories/", CategoryListCreateView.as_view(), name="category-list-create"),
+    path("categories/<int:pk>/", CategoryDetailView.as_view(), name="category-detail"),
+    path(
+        "income-sources/",
+        IncomeSourceListCreateView.as_view(),
+        name="income-source-list-create",
+    ),
+    path(
+        "income-sources/<int:pk>/",
+        IncomeSourceDetailView.as_view(),
+        name="income-source-detail",
+    ),
+    path("wallets/", WalletListCreateView.as_view(), name="wallet-list-create"),
+    path("wallets/<int:pk>/", WalletDetailView.as_view(), name="wallet-detail"),
+    path("credits/", CreditListCreateView.as_view(), name="credit-list-create"),
+    path(
+        "credits/activity/",
+        CreditWithActivityListView.as_view(),
+        name="credit-activity-list",
+    ),
+    path("credits/<int:pk>/", CreditDetailView.as_view(), name="credit-detail"),
+    path(
+        "credit-charges/",
+        CreditChargeListCreateView.as_view(),
+        name="credit-charge-list-create",
+    ),
+    path(
+        "credit-charges/<int:pk>/",
+        CreditChargeDetailView.as_view(),
+        name="credit-charge-detail",
+    ),
+    path(
+        "credit-payments/",
+        CreditPaymentListCreateView.as_view(),
+        name="credit-payment-list-create",
+    ),
+    path(
+        "credit-payments/<int:pk>/",
+        CreditPaymentDetailView.as_view(),
+        name="credit-payment-detail",
+    ),
+    path("expenses/", ExpenseListCreateView.as_view(), name="expense-list-create"),
+    path("expenses/<int:pk>/", ExpenseDetailView.as_view(), name="expense-detail"),
+    path("incomes/", IncomeListCreateView.as_view(), name="income-list-create"),
+    path("incomes/<int:pk>/", IncomeDetailView.as_view(), name="income-detail"),
+    path("debts/", DebtListCreateView.as_view(), name="debt-list-create"),
+    path("debts/<int:pk>/", DebtDetailView.as_view(), name="debt-detail"),
+    path(
+        "debt-payments/",
+        DebtPaymentListCreateView.as_view(),
+        name="debt-payment-list-create",
+    ),
+    path(
+        "debt-payments/<int:pk>/",
+        DebtPaymentDetailView.as_view(),
+        name="debt-payment-detail",
+    ),
+    path("summary/", SummaryView.as_view(), name="summary"),
+    path("stats/monthly/", MonthlyStatsView.as_view(), name="stats-monthly"),
+]

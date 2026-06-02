@@ -1,0 +1,54 @@
+# Run from expense-tracker-mini/ (project root).
+#
+# Local dev (no Compose):
+#   backend:  backend/.env + python manage.py runserver
+#   frontend: frontend/.env + npm run dev
+#
+# Production:
+#   cp backend/.env.docker.example backend/.env.docker
+#   cp frontend/.env.docker.example frontend/.env.docker   # optional, for build arg
+#   docker compose up --build -d
+#
+# UI:  http://localhost:8080
+# API: http://localhost:8000/api
+
+services:
+  db:
+    image: postgres:16-alpine
+    env_file:
+      - ./backend/.env.docker
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env.docker
+    environment:
+      DB_HOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000/api}
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  pgdata:

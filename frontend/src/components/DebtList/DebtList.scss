@@ -1,0 +1,99 @@
+@use "../../variables" as *;
+@use "../../mixins" as *;
+
+.debt-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.debt-card {
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: #fff;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.debt-card__top {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.debt-card__counterparty {
+  font-weight: 700;
+}
+
+.debt-card__actions {
+  margin-left: auto;
+  display: flex;
+  gap: $space-sm;
+}
+
+.debt-card__amounts {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.debt-card__remaining {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.debt-card__of {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: $color-muted;
+}
+
+.debt-card__payments {
+  list-style: none;
+  margin: 0;
+  padding: $space-sm;
+  background: $color-bg;
+  border-radius: $radius-sm;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  font-size: 0.85rem;
+}
+
+.debt-payment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-sm;
+}
+
+.debt-payment__delete {
+  border: none;
+  background: transparent;
+  color: $color-muted;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-danger;
+  }
+}
+
+// Direction badges (reuse the generic .badge base from ExpenseList)
+.badge--payable {
+  background: $color-danger;
+}
+
+.badge--receivable {
+  background: $color-success;
+}
+
+.badge--settled {
+  background: $color-muted;
+}

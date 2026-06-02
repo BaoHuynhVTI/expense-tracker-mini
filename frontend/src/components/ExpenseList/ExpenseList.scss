@@ -1,0 +1,93 @@
+@use "../../variables" as *;
+@use "../../mixins" as *;
+
+.expense-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.expense-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "main right"
+    "meta right";
+  gap: $space-xs $space-md;
+  padding: $space-md;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  background: #fff;
+
+  @include mobile-down {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "main"
+      "meta"
+      "right";
+  }
+}
+
+.expense-item__main {
+  grid-area: main;
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.expense-item__title {
+  font-weight: 600;
+}
+
+.expense-item__meta {
+  grid-area: meta;
+  display: flex;
+  gap: $space-md;
+  font-size: 0.82rem;
+  color: $color-muted;
+}
+
+.expense-item__right {
+  grid-area: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: $space-sm;
+
+  @include mobile-down {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.expense-item__amount {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.expense-item__actions {
+  display: flex;
+  gap: $space-sm;
+}
+
+.expense-item__wallet {
+  font-weight: 600;
+  color: $color-text;
+}
+
+// Category badge; background color comes from the category itself (inline style).
+.badge {
+  display: inline-block;
+  padding: 2px $space-sm;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: $color-muted;
+}

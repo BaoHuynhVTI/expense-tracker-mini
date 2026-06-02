@@ -1,0 +1,140 @@
+@use "../../variables" as *;
+@use "../../mixins" as *;
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+}
+
+.settings__stack {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.settings-panel {
+  @include card-surface;
+  overflow: hidden;
+}
+
+.settings-panel__header {
+  @include flex-between;
+  gap: $space-md;
+  padding: $space-md $space-lg;
+  border-bottom: 1px solid transparent;
+}
+
+.settings-panel--open .settings-panel__header {
+  border-bottom-color: $color-border;
+}
+
+.settings-panel__toggle {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+}
+
+.settings-panel__chevron {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid $color-muted;
+  border-bottom: 2px solid $color-muted;
+  transform: rotate(-45deg);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.settings-panel--open .settings-panel__chevron {
+  transform: rotate(45deg);
+}
+
+.settings-panel__title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: $color-text;
+}
+
+.settings-panel__count {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: $color-muted;
+  background: $color-bg;
+  border: 1px solid $color-border;
+  border-radius: 999px;
+  padding: 2px $space-sm;
+}
+
+.settings-panel__body {
+  padding: $space-md $space-lg $space-lg;
+}
+
+.settings-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-sm $space-md;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  background: #fff;
+}
+
+.settings-item__dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.settings-item__name {
+  font-weight: 600;
+}
+
+.settings-item__meta {
+  margin-left: auto;
+  font-size: 0.82rem;
+  color: $color-muted;
+}
+
+.settings-item__actions {
+  margin-left: auto;
+  display: flex;
+  gap: $space-sm;
+}
+
+.settings-item__meta + .settings-item__actions {
+  margin-left: $space-md;
+}
+
+@include mobile-down {
+  .settings-item {
+    flex-wrap: wrap;
+  }
+
+  .settings-item__meta,
+  .settings-item__actions {
+    margin-left: 0;
+  }
+
+  .settings-item__actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

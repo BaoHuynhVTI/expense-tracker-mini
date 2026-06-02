@@ -1,0 +1,105 @@
+@use "../../variables" as *;
+
+.credit-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.credit-card {
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: #fff;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.credit-card__top {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+.credit-card__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.credit-card__name {
+  font-weight: 700;
+}
+
+.credit-card__available {
+  margin-left: auto;
+  font-size: 0.82rem;
+}
+
+.credit-card__amounts {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.credit-card__balance {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.credit-card__of {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: $color-muted;
+}
+
+.credit-card__entries {
+  list-style: none;
+  margin: 0;
+  padding: $space-sm;
+  background: $color-bg;
+  border-radius: $radius-sm;
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  font-size: 0.85rem;
+}
+
+.credit-card__entries--payments {
+  background: #eef0e0;
+}
+
+.credit-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-sm;
+}
+
+.credit-entry__cat {
+  color: $color-muted;
+}
+
+.credit-entry__actions {
+  display: flex;
+  gap: $space-xs;
+  flex-shrink: 0;
+}
+
+.credit-entry__delete {
+  border: none;
+  background: transparent;
+  color: $color-muted;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-danger;
+  }
+}

@@ -1,0 +1,43 @@
+@use "../../variables" as *;
+
+// Base .input-field styles live in global.scss (shared primitive).
+// Component-specific tweaks only.
+textarea.input-field__control {
+  resize: vertical;
+  min-height: 64px;
+}
+
+// Password field with show/hide toggle
+.input-field__password {
+  position: relative;
+  display: flex;
+}
+
+.input-field__control--password {
+  padding-right: 44px;
+}
+
+.input-field__toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: $color-muted;
+  cursor: pointer;
+  border-radius: $radius-sm;
+
+  &:hover {
+    color: $color-text;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: -2px;
+  }
+}
