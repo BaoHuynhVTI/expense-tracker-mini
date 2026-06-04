@@ -1,5 +1,6 @@
 @use "../../variables" as *;
 @use "../../mixins" as *;
+@use "../../motion" as *;
 
 $sidebar-width: 220px;
 
@@ -14,7 +15,7 @@ $sidebar-width: 220px;
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  @include transition(opacity, $motion-base, $ease-in-out);
 
   @include tablet-down {
     display: block;
@@ -47,7 +48,7 @@ $sidebar-width: 220px;
     left: 0;
     z-index: 40;
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    @include transition(transform, $motion-slow, $ease-emphasized);
   }
 }
 
@@ -86,10 +87,12 @@ $sidebar-width: 220px;
   font-weight: 600;
   color: $color-muted;
   text-decoration: none;
+  @include transition(color background-color transform);
 
   &:hover {
     color: $color-text;
     background: rgba($color-primary, 0.06);
+    transform: translateX(2px);
   }
 }
 

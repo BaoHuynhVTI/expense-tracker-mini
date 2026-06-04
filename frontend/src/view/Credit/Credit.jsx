@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import ConfirmDialog from "../../components/ConfirmDialog/ConfirmDialog.jsx";
 import CreditChargeForm from "../../components/CreditChargeForm/CreditChargeForm.jsx";
@@ -12,7 +12,11 @@ import { useMinLoading } from "../../utils/useMinLoading.js";
 import { usePagination } from "../../utils/usePagination.js";
 import { useCredit } from "./useCredit.js";
 
+const PAGE_SIZE = 6;
+
 export default function Credit() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const {
     credits,
     categories,
@@ -34,7 +38,18 @@ export default function Credit() {
   const [deletePaymentTarget, setDeletePaymentTarget] = useState(null);
 
   const ready = credits.length > 0 && categories.length > 0;
-  const { page, setPage, pageCount, pageItems } = usePagination(credits, 6);
+  const { page, setPage, pageCount, pageItems } = usePagination(credits, PAGE_SIZE);
+
+  useEffect(() => {
+    const focusId = location.state?.focusCreditId;
+    if (!focusId || !credits.length) return;
+
+    const index = credits.findIndex((c) => String(c.id) === String(focusId));
+    if (index >= 0) {
+      setPage(Math.floor(index / PAGE_SIZE) + 1);
+    }
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location.state, location.pathname, credits, navigate, setPage]);
 
   const openCreateCharge = () => {
     setEditingCharge(null);

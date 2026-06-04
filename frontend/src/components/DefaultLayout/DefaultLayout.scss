@@ -1,5 +1,6 @@
 @use "../../variables" as *;
 @use "../../mixins" as *;
+@use "../../motion" as *;
 
 .default-layout {
   min-height: 100vh;
@@ -24,6 +25,7 @@
   max-width: 1100px;
   margin: 0 auto;
   padding: $space-lg;
+  @include transition(padding);
 }
 
 .default-layout__loading {

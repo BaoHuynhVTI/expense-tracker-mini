@@ -1,5 +1,6 @@
 @use "../../variables" as *;
 @use "../../mixins" as *;
+@use "../../motion" as *;
 
 .settings {
   display: flex;
@@ -41,6 +42,7 @@
   cursor: pointer;
   text-align: left;
   color: inherit;
+  @include transition(opacity color);
 }
 
 .settings-panel__chevron {
@@ -49,7 +51,7 @@
   border-right: 2px solid $color-muted;
   border-bottom: 2px solid $color-muted;
   transform: rotate(-45deg);
-  transition: transform 0.2s ease;
+  @include transition(transform, $motion-base, $ease-in-out);
   flex-shrink: 0;
 }
 
@@ -75,6 +77,7 @@
 
 .settings-panel__body {
   padding: $space-md $space-lg $space-lg;
+  @include animate-fade-slide-up($motion-fast);
 }
 
 .settings-items {
@@ -94,6 +97,12 @@
   border: 1px solid $color-border;
   border-radius: $radius-sm;
   background: #fff;
+  @include transition(box-shadow border-color transform);
+
+  &:hover {
+    box-shadow: $shadow-sm;
+    transform: translateX(-2px);
+  }
 }
 
 .settings-item__dot {

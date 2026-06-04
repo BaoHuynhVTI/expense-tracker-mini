@@ -120,7 +120,7 @@ export default function MonthlyChart({ data = [] }) {
   return (
     <div className="monthly-chart">
       <p className="monthly-chart__legend-note muted">
-        One column per month: income up, spending down from the center. Line: difference % (right).
+        One column per month: income up, spending down from the center. Line: savings % of income (right).
       </p>
       <ResponsiveContainer width="100%" height={300}>
         <ComposedChart
@@ -193,7 +193,7 @@ export default function MonthlyChart({ data = [] }) {
             yAxisId="pct"
             type="monotone"
             dataKey="diffPct"
-            name="Difference %"
+            name="Savings % of income"
             stroke={COLOR_PCT_LINE}
             strokeWidth={2}
             connectNulls

@@ -24,15 +24,13 @@ export function monthDifference(income, spending) {
   return Number(income) - Number(spending);
 }
 
-/** Numeric % for (income − spending); null when undefined (no base). */
+/** Savings rate: (income − spending) / income × 100. Null when income is 0. */
 export function diffPctValue(income, spending) {
   const diff = monthDifference(income, spending);
-  if (diff === 0) return 0;
+  const inc = Number(income);
+  if (inc === 0) return diff === 0 ? 0 : null;
 
-  const base = spending > 0 ? spending : income;
-  if (base === 0) return null;
-
-  return (diff / base) * 100;
+  return (diff / inc) * 100;
 }
 
 export function formatDifference(diff) {

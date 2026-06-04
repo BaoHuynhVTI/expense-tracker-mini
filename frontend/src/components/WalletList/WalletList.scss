@@ -1,4 +1,5 @@
 @use "../../variables" as *;
+@use "../../motion" as *;
 
 .wallet-list {
   display: grid;
@@ -14,6 +15,12 @@
   border: 1px solid $color-border;
   border-radius: $radius-md;
   background: #fff;
+  @include transition(box-shadow border-color transform);
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
 }
 
 .wallet-card__dot {

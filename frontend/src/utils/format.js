@@ -27,6 +27,14 @@ export function formatJPY(value) {
   return jpyFormatter.format(Number(value || 0));
 }
 
+/** Short label for credit statement close date (ISO yyyy-mm-dd). */
+export function formatBillingClose(isoDate) {
+  if (!isoDate) return "";
+  const d = new Date(`${isoDate}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return isoDate;
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
 // Color palette (from the reference vintage swatches)
 export const VINTAGE_SWATCHES = [
   "#d64e38", // terracotta

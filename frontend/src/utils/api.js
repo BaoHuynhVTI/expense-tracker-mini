@@ -153,6 +153,15 @@ export const updateIncome = (id, payload) =>
 export const deleteIncome = (id) =>
   request(`/incomes/${id}/`, { method: "DELETE" });
 
+// Counterparties (debt actors)
+export const fetchCounterparties = () => request("/counterparties/");
+
+export const createCounterparty = (payload) =>
+  request("/counterparties/", { method: "POST", body: payload });
+
+export const deleteCounterparty = (id) =>
+  request(`/counterparties/${id}/`, { method: "DELETE" });
+
 // Debts
 export const fetchDebts = () => request("/debts/");
 

@@ -1,4 +1,6 @@
 """Tests for the expenses app."""
+import unittest
+
 from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
@@ -6,6 +8,7 @@ from rest_framework.test import APITestCase
 
 from .models import (
     Category,
+    Counterparty,
     Credit,
     CreditCharge,
     CreditPayment,
@@ -344,6 +347,40 @@ class IncomeTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
+def make_counterparty(user, name="Friend"):
+    return Counterparty.objects.create(user=user, name=name)
+
+
+class CounterpartyTests(APITestCase):
+    def setUp(self):
+        self.user = make_user()
+        self.client.force_authenticate(user=self.user)
+        self.wallet = Wallet.objects.create(user=self.user, name="Cash")
+        self.cp = make_counterparty(self.user, "Alice")
+
+    def test_counterparty_totals(self):
+        Debt.objects.create(
+            user=self.user,
+            counterparty=self.cp,
+            wallet=self.wallet,
+            direction=Debt.Direction.PAYABLE,
+            principal="1000.00",
+            incurred_date="2026-03-01",
+        )
+        Debt.objects.create(
+            user=self.user,
+            counterparty=self.cp,
+            wallet=self.wallet,
+            direction=Debt.Direction.RECEIVABLE,
+            principal="400.00",
+            incurred_date="2026-03-02",
+        )
+        response = self.client.get(reverse("counterparty-list-create"))
+        row = next(item for item in response.data if item["id"] == self.cp.id)
+        self.assertEqual(row["payable_remaining"], "1000.00")
+        self.assertEqual(row["receivable_remaining"], "400.00")
+
+
 class DebtTests(APITestCase):
     def setUp(self):
         self.user = make_user()
@@ -351,13 +388,14 @@ class DebtTests(APITestCase):
         self.wallet = Wallet.objects.create(
             user=self.user, name="Cash", initial_balance="1000.00"
         )
+        self.counterparty = make_counterparty(self.user, "Friend")
 
     def test_borrowing_increases_wallet_then_repayment_decreases(self):
         debt = Debt.objects.create(
             user=self.user,
             wallet=self.wallet,
+            counterparty=self.counterparty,
             direction=Debt.Direction.PAYABLE,
-            counterparty="Friend",
             principal="2000.00",
             incurred_date="2026-03-01",
         )
@@ -383,23 +421,40 @@ class DebtTests(APITestCase):
         self.assertEqual(debt_data["remaining"], "1500.00")
 
     def test_lending_decreases_wallet(self):
+        buddy = make_counterparty(self.user, "Buddy")
         Debt.objects.create(
             user=self.user,
             wallet=self.wallet,
+            counterparty=buddy,
             direction=Debt.Direction.RECEIVABLE,
-            counterparty="Buddy",
             principal="300.00",
             incurred_date="2026-03-01",
         )
         wallet = self.client.get(reverse("wallet-detail", args=[self.wallet.id])).data
         self.assertEqual(wallet["balance"], "700.00")  # 1000 - 300 lent
 
+    def test_tracking_only_debt_does_not_change_wallet(self):
+        response = self.client.post(
+            reverse("debt-list-create"),
+            {
+                "direction": "payable",
+                "counterparty": self.counterparty.id,
+                "principal": "5000.00",
+                "affects_wallet": False,
+                "incurred_date": "2026-03-01",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        wallet = self.client.get(reverse("wallet-detail", args=[self.wallet.id])).data
+        self.assertEqual(wallet["balance"], "1000.00")
+
     def test_payment_cannot_exceed_remaining(self):
         debt = Debt.objects.create(
             user=self.user,
             wallet=self.wallet,
+            counterparty=self.counterparty,
             direction=Debt.Direction.PAYABLE,
-            counterparty="Friend",
             principal="100.00",
             incurred_date="2026-03-01",
         )
@@ -415,6 +470,26 @@ class DebtTests(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(DebtPayment.objects.count(), 0)
+
+
+class CreditBillingTests(unittest.TestCase):
+    def test_cycle_bounds_before_close_day(self):
+        from datetime import date
+
+        from expenses.credit_billing import billing_cycle_bounds
+
+        start, end = billing_cycle_bounds(25, date(2026, 6, 2))
+        self.assertEqual(start, date(2026, 5, 26))
+        self.assertEqual(end, date(2026, 6, 25))
+
+    def test_cycle_bounds_after_close_day(self):
+        from datetime import date
+
+        from expenses.credit_billing import billing_cycle_bounds
+
+        start, end = billing_cycle_bounds(25, date(2026, 6, 28))
+        self.assertEqual(start, date(2026, 6, 26))
+        self.assertEqual(end, date(2026, 7, 25))
 
 
 class CreditTests(APITestCase):
@@ -455,6 +530,36 @@ class CreditTests(APITestCase):
         credit = self.client.get(reverse("credit-detail", args=[self.credit.id])).data
         self.assertEqual(credit["balance"], "5000.00")
         self.assertEqual(credit["available"], "495000.00")
+
+    def test_cycle_charges_only_include_current_billing_period(self):
+        from unittest.mock import patch
+
+        self.credit.statement_day = 25
+        self.credit.save(update_fields=["statement_day"])
+        CreditCharge.objects.create(
+            user=self.user,
+            credit=self.credit,
+            category=self.category,
+            title="Old cycle",
+            amount="1000.00",
+            charged_date="2026-05-20",
+        )
+        CreditCharge.objects.create(
+            user=self.user,
+            credit=self.credit,
+            category=self.category,
+            title="Current cycle",
+            amount="3000.00",
+            charged_date="2026-06-10",
+        )
+        with patch("expenses.serializers.billing_cycle_bounds") as bounds:
+            from datetime import date
+
+            bounds.return_value = (date(2026, 5, 26), date(2026, 6, 25))
+            credit = self.client.get(reverse("credit-detail", args=[self.credit.id])).data
+        self.assertEqual(credit["cycle_charges"], "3000.00")
+        self.assertEqual(credit["cycle_start"], "2026-05-26")
+        self.assertEqual(credit["cycle_end"], "2026-06-25")
 
     def test_payment_decreases_wallet_and_credit_balance(self):
         CreditCharge.objects.create(

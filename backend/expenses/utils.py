@@ -22,16 +22,26 @@ def compute_wallet_balance(wallet, exclude_transfer=None):
     expenses = aggregate_sum(wallet.expenses)
     incomes = aggregate_sum(wallet.incomes)
     borrowed = aggregate_sum(
-        wallet.debts.filter(direction=Debt.Direction.PAYABLE), "principal"
+        wallet.debts.filter(
+            direction=Debt.Direction.PAYABLE, affects_wallet=True
+        ),
+        "principal",
     )
     lent = aggregate_sum(
-        wallet.debts.filter(direction=Debt.Direction.RECEIVABLE), "principal"
+        wallet.debts.filter(
+            direction=Debt.Direction.RECEIVABLE, affects_wallet=True
+        ),
+        "principal",
     )
     repaid = aggregate_sum(
-        wallet.debt_payments.filter(debt__direction=Debt.Direction.PAYABLE)
+        wallet.debt_payments.filter(
+            debt__direction=Debt.Direction.PAYABLE, debt__affects_wallet=True
+        )
     )
     collected = aggregate_sum(
-        wallet.debt_payments.filter(debt__direction=Debt.Direction.RECEIVABLE)
+        wallet.debt_payments.filter(
+            debt__direction=Debt.Direction.RECEIVABLE, debt__affects_wallet=True
+        )
     )
     credit_bills = aggregate_sum(wallet.credit_payments)
 

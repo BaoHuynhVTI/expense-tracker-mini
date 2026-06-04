@@ -1,6 +1,8 @@
 @use "../../variables" as *;
+@use "../../motion" as *;
 
 .loading {
+  @include animate-fade-in($motion-base);
   display: flex;
   flex-direction: column;
   align-items: center;

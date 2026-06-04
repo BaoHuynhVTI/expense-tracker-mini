@@ -1,4 +1,5 @@
 @use "../../variables" as *;
+@use "../../motion" as *;
 
 .credit-card-list {
   display: grid;
@@ -14,6 +15,12 @@
   border: 1px solid $color-border;
   border-radius: $radius-md;
   background: #fff;
+  @include transition(box-shadow border-color transform);
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
 }
 
 .credit-card-mini__dot {
@@ -34,12 +41,25 @@
   font-weight: 600;
 }
 
-.credit-card-mini__balance {
-  font-size: 1rem;
+.credit-card-mini__available {
+  font-size: 1.05rem;
   font-weight: 700;
-  color: $color-muted;
+  color: $color-success;
 }
 
-.credit-card-mini__balance--owed {
+.credit-card-mini__label {
+  font-size: 0.72rem;
+  margin-top: -2px;
+}
+
+.credit-card-mini__owed {
+  font-size: 0.78rem;
+  font-weight: 600;
   color: $color-danger;
+}
+
+.credit-card-mini__cycle {
+  font-size: 0.72rem;
+  line-height: 1.35;
+  margin-top: $space-xs;
 }

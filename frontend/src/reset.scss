@@ -1,7 +1,17 @@
+@use "motion" as *;
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+
+  @include reduced-motion {
+    scroll-behavior: auto;
+  }
 }
 
 html,

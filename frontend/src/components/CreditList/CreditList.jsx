@@ -1,4 +1,4 @@
-import { formatJPY } from "../../utils/format.js";
+import { formatBillingClose, formatJPY } from "../../utils/format.js";
 import "./CreditList.scss";
 
 export default function CreditList({
@@ -34,6 +34,18 @@ export default function CreditList({
               <span className="credit-card__balance">
                 {formatJPY(credit.balance)}
                 <span className="credit-card__of"> / {formatJPY(credit.credit_limit)}</span>
+              </span>
+              <span className="credit-card__cycle muted">
+                This cycle {formatJPY(credit.cycle_charges)}
+                {credit.cycle_end && (
+                  <> · closes {formatBillingClose(credit.cycle_end)}</>
+                )}
+                {credit.cycle_start && credit.cycle_end && (
+                  <>
+                    {" "}
+                    ({credit.cycle_start} – {credit.cycle_end})
+                  </>
+                )}
               </span>
             </div>
 

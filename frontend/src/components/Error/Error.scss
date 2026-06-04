@@ -1,6 +1,8 @@
 @use "../../variables" as *;
+@use "../../motion" as *;
 
 .error-page {
+  @include animate-fade-slide-up($motion-slow);
   min-height: 100vh;
   display: flex;
   flex-direction: column;

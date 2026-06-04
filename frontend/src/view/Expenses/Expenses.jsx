@@ -22,6 +22,7 @@ function buildDebtDraftFromExpense(payload, overdraft) {
 
   return {
     direction: "payable",
+    affects_wallet: true,
     principal: String(shortfall),
     wallet: payload.wallet,
     incurred_date: payload.spent_date,
@@ -96,6 +97,9 @@ export default function Expenses() {
       }
     }
     await saveExpense(payload);
+    if (!editing && payload.payType === "credit") {
+      navigate("/credit", { state: { focusCreditId: payload.credit } });
+    }
   };
 
   const confirmOverdraft = async () => {

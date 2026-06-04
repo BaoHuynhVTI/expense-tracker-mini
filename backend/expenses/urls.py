@@ -4,6 +4,8 @@ from django.urls import path
 from .views import (
     CategoryDetailView,
     CategoryListCreateView,
+    CounterpartyDetailView,
+    CounterpartyListCreateView,
     CreditChargeDetailView,
     CreditChargeListCreateView,
     CreditDetailView,
@@ -87,6 +89,16 @@ urlpatterns = [
     path("expenses/<int:pk>/", ExpenseDetailView.as_view(), name="expense-detail"),
     path("incomes/", IncomeListCreateView.as_view(), name="income-list-create"),
     path("incomes/<int:pk>/", IncomeDetailView.as_view(), name="income-detail"),
+    path(
+        "counterparties/",
+        CounterpartyListCreateView.as_view(),
+        name="counterparty-list-create",
+    ),
+    path(
+        "counterparties/<int:pk>/",
+        CounterpartyDetailView.as_view(),
+        name="counterparty-detail",
+    ),
     path("debts/", DebtListCreateView.as_view(), name="debt-list-create"),
     path("debts/<int:pk>/", DebtDetailView.as_view(), name="debt-detail"),
     path(

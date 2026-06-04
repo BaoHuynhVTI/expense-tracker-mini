@@ -1,0 +1,88 @@
+@use "../../variables" as *;
+@use "../../mixins" as *;
+@use "../../motion" as *;
+
+.debts-page__alerts {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  margin-bottom: $space-md;
+}
+
+.debts-page__split {
+  display: flex;
+  gap: 0;
+  align-items: start;
+}
+
+.debts-page__records {
+  flex: 1;
+  min-width: 0;
+  @include transition(margin-right, $motion-slow, $ease-in-out);
+}
+
+.debts-page__split--with-sidebar .debts-page__records {
+  margin-right: $space-lg;
+}
+
+.debts-page__counterparties-wrap {
+  flex-shrink: 0;
+  width: 0;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  @include transition(max-width opacity, $motion-slow, $ease-in-out);
+
+  @include tablet-down {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.debts-page__counterparties-wrap.is-open {
+  max-width: 320px;
+  width: min(320px, 38vw);
+  opacity: 1;
+  pointer-events: auto;
+
+  @include tablet-down {
+    width: 100%;
+    max-width: 100%;
+    margin-top: $space-lg;
+  }
+}
+
+.debts-page__counterparties {
+  @include card-surface;
+  width: 320px;
+  max-width: 100%;
+  padding: $space-md;
+  position: sticky;
+  top: calc(52px + $space-lg);
+  max-height: calc(100vh - 52px - #{$space-lg} * 2);
+  overflow-y: auto;
+  animation: motion-slide-in-right $motion-slow $ease-out both;
+
+  @include tablet-down {
+    position: static;
+    width: 100%;
+    max-height: none;
+    animation: motion-fade-slide-up $motion-base $ease-out both;
+  }
+}
+
+.debts-page__counterparties-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-sm;
+  margin-bottom: $space-md;
+}
+
+.debts-page__counterparties-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $color-text;
+}

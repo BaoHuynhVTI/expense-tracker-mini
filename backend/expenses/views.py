@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 
 from .models import (
     Category,
+    Counterparty,
     Credit,
     CreditCharge,
     CreditPayment,
@@ -26,6 +27,7 @@ from .models import (
 )
 from .serializers import (
     CategorySerializer,
+    CounterpartySerializer,
     CreditChargeSerializer,
     CreditDetailSerializer,
     CreditPaymentSerializer,
@@ -159,11 +161,30 @@ class WalletTransferDetailView(generics.RetrieveUpdateDestroyAPIView):
         )
 
 
+class CounterpartyListCreateView(generics.ListCreateAPIView):
+    serializer_class = CounterpartySerializer
+
+    def get_queryset(self):
+        return Counterparty.objects.filter(
+            user=self.request.user
+        ).prefetch_related("debts__payments")
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class CounterpartyDetailView(OwnedDetailView):
+    model = Counterparty
+    serializer_class = CounterpartySerializer
+
+
 class DebtListCreateView(generics.ListCreateAPIView):
     serializer_class = DebtSerializer
 
     def get_queryset(self):
-        return Debt.objects.filter(user=self.request.user).select_related("wallet")
+        return Debt.objects.filter(user=self.request.user).select_related(
+            "counterparty", "wallet"
+        )
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -173,7 +194,9 @@ class DebtDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = DebtSerializer
 
     def get_queryset(self):
-        return Debt.objects.filter(user=self.request.user)
+        return Debt.objects.filter(user=self.request.user).select_related(
+            "counterparty", "wallet"
+        )
 
 
 class DebtPaymentListCreateView(generics.ListCreateAPIView):

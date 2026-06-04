@@ -11,8 +11,11 @@ function today() {
 
 export default function RepayForm({ debt, wallets = [], onSubmit }) {
   const isPayable = debt.direction === "payable";
+  const affectsWallet = debt.affects_wallet !== false;
   const [amount, setAmount] = useState(debt.remaining);
-  const [wallet, setWallet] = useState(debt.wallet ?? wallets[0]?.id ?? "");
+  const [wallet, setWallet] = useState(
+    debt.wallet ?? wallets[0]?.id ?? ""
+  );
   const [paidDate, setPaidDate] = useState(today());
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -21,10 +24,15 @@ export default function RepayForm({ debt, wallets = [], onSubmit }) {
     e.preventDefault();
     setError("");
     if (!(Number(amount) > 0)) return setError("Amount must be greater than 0.");
-    if (!wallet) return setError("Please choose a wallet.");
+    if (affectsWallet && !wallet) return setError("Please choose a wallet.");
     setBusy(true);
     try {
-      await onSubmit({ debt: debt.id, amount, wallet, paid_date: paidDate });
+      await onSubmit({
+        debt: debt.id,
+        amount,
+        wallet: affectsWallet ? wallet : null,
+        paid_date: paidDate,
+      });
     } catch (err) {
       setError(extractError(err, "Could not record the payment."));
       setBusy(false);
@@ -35,9 +43,15 @@ export default function RepayForm({ debt, wallets = [], onSubmit }) {
     <form className="expense-form" onSubmit={submit}>
       {error && <div className="alert alert--error">{error}</div>}
       <p className="muted">
-        {isPayable ? "Repay to" : "Collect from"} <strong>{debt.counterparty}</strong> ·
+        {isPayable ? "Repay to" : "Collect from"}{" "}
+        <strong>{debt.counterparty_detail?.name ?? "—"}</strong> ·
         remaining {formatJPY(debt.remaining)}
       </p>
+      {!affectsWallet && (
+        <p className="muted expense-form__hint">
+          This debt is tracking only — recording payment will not change wallet balances.
+        </p>
+      )}
       <div className="field-row">
         <InputComponent
           label="Amount (¥)"
@@ -47,12 +61,14 @@ export default function RepayForm({ debt, wallets = [], onSubmit }) {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
-        <SelectComponent
-          label="Wallet"
-          options={wallets.map((w) => ({ value: w.id, label: w.name }))}
-          value={wallet}
-          onChange={(e) => setWallet(e.target.value)}
-        />
+        {affectsWallet && (
+          <SelectComponent
+            label="Wallet"
+            options={wallets.map((w) => ({ value: w.id, label: w.name }))}
+            value={wallet}
+            onChange={(e) => setWallet(e.target.value)}
+          />
+        )}
       </div>
       <InputComponent
         label="Date"

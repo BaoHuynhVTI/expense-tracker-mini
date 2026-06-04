@@ -1,4 +1,5 @@
 @use "variables" as *;
+@use "motion" as *;
 
 // Responsive helpers
 @mixin tablet-down {
@@ -19,6 +20,7 @@
   border: 1px solid $color-border;
   border-radius: $radius-md;
   box-shadow: $shadow-sm;
+  @include transition(box-shadow border-color);
 }
 
 @mixin flex-between {

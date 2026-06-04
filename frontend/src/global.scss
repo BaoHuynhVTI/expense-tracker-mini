@@ -1,5 +1,6 @@
 @use "variables" as *;
 @use "mixins" as *;
+@use "motion" as *;
 
 body {
   background: $color-bg;
@@ -22,7 +23,11 @@ body {
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  @include transition(background color border-color box-shadow transform opacity);
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
 
   &:disabled {
     opacity: 0.6;
@@ -100,6 +105,7 @@ body {
   font-size: 0.875rem;
   color: $color-text;
   background: #fff;
+  @include transition(border-color box-shadow background-color);
 
   &:focus {
     outline: none;
@@ -108,12 +114,12 @@ body {
   }
 }
 
-// Alerts
 .alert {
   padding: $space-sm $space-md;
   border-radius: $radius-sm;
   font-size: 0.85rem;
   margin-bottom: $space-md;
+  @include animate-fade-in($motion-fast);
 }
 
 .alert--error {
@@ -139,6 +145,7 @@ body {
 .panel {
   @include card-surface;
   padding: $space-md;
+  @include transition(box-shadow border-color);
 }
 
 .panel + .panel {
@@ -160,6 +167,13 @@ body {
   .panel__title {
     margin: 0;
   }
+}
+
+.panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-sm;
+  align-items: center;
 }
 
 .panel__title {
@@ -226,4 +240,13 @@ body {
   @include mobile-down {
     grid-template-columns: 1fr;
   }
+}
+
+.page {
+  @include animate-fade-slide-up($motion-slow);
+}
+
+.btn--active {
+  color: $color-primary;
+  background: rgba($color-primary, 0.1);
 }

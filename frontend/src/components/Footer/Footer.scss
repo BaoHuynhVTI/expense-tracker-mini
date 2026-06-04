@@ -1,10 +1,12 @@
 @use "../../variables" as *;
 @use "../../mixins" as *;
+@use "../../motion" as *;
 
 .footer {
   background: $color-surface;
   border-top: 1px solid $color-border;
   margin-top: $space-xl;
+  @include transition(border-color box-shadow);
 }
 
 .footer__inner {

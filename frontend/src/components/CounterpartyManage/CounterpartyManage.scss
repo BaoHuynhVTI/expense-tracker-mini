@@ -1,0 +1,64 @@
+@use "../../variables" as *;
+@use "../../motion" as *;
+
+.counterparty-manage__add {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  margin-bottom: $space-lg;
+
+  .btn {
+    align-self: flex-start;
+  }
+}
+
+.counterparty-manage__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.counterparty-manage__row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: $space-md;
+  align-items: center;
+  padding: $space-md;
+  background: $color-bg;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  @include transition(box-shadow border-color transform opacity);
+
+  &:hover {
+    box-shadow: $shadow-sm;
+    transform: translateX(-2px);
+  }
+
+  @media (max-width: $bp-mobile) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.counterparty-manage__name {
+  font-weight: 700;
+  color: $color-text;
+}
+
+.counterparty-manage__totals {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.82rem;
+  color: $color-muted;
+}
+
+.counterparty-manage__owe strong {
+  color: $color-danger;
+}
+
+.counterparty-manage__owed strong {
+  color: $color-success;
+}

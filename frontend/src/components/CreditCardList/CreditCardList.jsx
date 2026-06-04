@@ -1,4 +1,4 @@
-import { formatJPY } from "../../utils/format.js";
+import { formatBillingClose, formatJPY } from "../../utils/format.js";
 import "./CreditCardList.scss";
 
 export default function CreditCardList({ credits = [] }) {
@@ -19,12 +19,20 @@ export default function CreditCardList({ credits = [] }) {
             />
             <div className="credit-card-mini__body">
               <span className="credit-card-mini__name">{credit.name}</span>
-              <span
-                className={`credit-card-mini__balance${
-                  owed ? " credit-card-mini__balance--owed" : ""
-                }`}
-              >
-                {formatJPY(credit.balance)}
+              <span className="credit-card-mini__available">
+                {formatJPY(credit.available)}
+              </span>
+              <span className="credit-card-mini__label muted">available</span>
+              {owed && (
+                <span className="credit-card-mini__owed">
+                  Owed {formatJPY(credit.balance)}
+                </span>
+              )}
+              <span className="credit-card-mini__cycle muted">
+                This cycle {formatJPY(credit.cycle_charges)}
+                {credit.cycle_end && (
+                  <> · closes {formatBillingClose(credit.cycle_end)}</>
+                )}
               </span>
             </div>
           </div>

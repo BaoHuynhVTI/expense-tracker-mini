@@ -18,7 +18,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="dashboard">
+    <div className="page dashboard">
       {error && <div className="alert alert--error">{error}</div>}
 
       <SummaryCards summary={summary} wallets={wallets} />

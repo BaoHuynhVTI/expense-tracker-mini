@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import (
     Category,
+    Counterparty,
     Credit,
     CreditCharge,
     CreditPayment,
@@ -82,12 +83,19 @@ class DebtPaymentInline(admin.TabularInline):
     extra = 0
 
 
+@admin.register(Counterparty)
+class CounterpartyAdmin(admin.ModelAdmin):
+    list_display = ("name", "user", "created_at")
+    search_fields = ("name", "user__email")
+
+
 @admin.register(Debt)
 class DebtAdmin(admin.ModelAdmin):
     list_display = (
         "counterparty",
         "direction",
         "principal",
+        "affects_wallet",
         "wallet",
         "incurred_date",
         "user",
@@ -105,7 +113,14 @@ class DebtPaymentAdmin(admin.ModelAdmin):
 
 @admin.register(Credit)
 class CreditAdmin(admin.ModelAdmin):
-    list_display = ("name", "credit_limit", "color", "user", "created_at")
+    list_display = (
+        "name",
+        "credit_limit",
+        "statement_day",
+        "color",
+        "user",
+        "created_at",
+    )
     search_fields = ("name", "user__email")
 
 

@@ -1,6 +1,17 @@
 @use "../../variables" as *;
+@use "../../motion" as *;
 
 .dashboard {
   display: flex;
   flex-direction: column;
+}
+
+.dashboard > section.panel {
+  @include animate-fade-slide-up($motion-base);
+
+  @for $i from 1 through 4 {
+    &:nth-of-type(#{$i}) {
+      animation-delay: #{0.04s + $i * 0.05s};
+    }
+  }
 }

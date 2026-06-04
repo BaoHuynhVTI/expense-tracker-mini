@@ -1,6 +1,8 @@
 @use "../../variables" as *;
+@use "../../motion" as *;
 
 .pagination {
+  @include transition(opacity, $motion-base);
   display: flex;
   align-items: center;
   justify-content: center;

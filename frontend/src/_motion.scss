@@ -1,0 +1,100 @@
+// Shared motion tokens and keyframes (smooth, consistent easing).
+
+$motion-fast: 0.18s;
+$motion-base: 0.28s;
+$motion-slow: 0.38s;
+
+$ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-out: cubic-bezier(0, 0, 0.2, 1);
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+$ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+@mixin transition(
+  $properties: all,
+  $duration: $motion-base,
+  $ease: $ease-standard
+) {
+  transition-property: $properties;
+  transition-duration: $duration;
+  transition-timing-function: $ease;
+
+  @include reduced-motion {
+    transition-duration: 0.01ms;
+  }
+}
+
+@mixin animate-fade-in($duration: $motion-base, $ease: $ease-out) {
+  animation: motion-fade-in $duration $ease both;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+@mixin animate-fade-slide-up($duration: $motion-base, $ease: $ease-out) {
+  animation: motion-fade-slide-up $duration $ease both;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+@mixin animate-scale-in($duration: $motion-base, $ease: $ease-emphasized) {
+  animation: motion-scale-in $duration $ease both;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+@keyframes motion-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes motion-fade-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes motion-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes motion-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

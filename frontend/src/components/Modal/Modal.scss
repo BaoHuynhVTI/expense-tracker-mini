@@ -1,5 +1,6 @@
 @use "../../variables" as *;
 @use "../../mixins" as *;
+@use "../../motion" as *;
 
 .modal-overlay {
   position: fixed;
@@ -11,6 +12,7 @@
   padding: $space-lg;
   overflow-y: auto;
   z-index: 1000;
+  animation: motion-fade-in $motion-base $ease-out both;
 }
 
 .modal {
@@ -20,7 +22,7 @@
   box-shadow: $shadow-md;
   width: 100%;
   margin: auto;
-  animation: modal-in 0.15s ease-out;
+  @include animate-scale-in($motion-base);
 }
 
 .modal--sm {
@@ -50,23 +52,19 @@
   line-height: 1;
   color: $color-muted;
   cursor: pointer;
+  border-radius: $radius-sm;
+  @include transition(color background-color transform);
 
   &:hover {
     color: $color-text;
+    background: rgba($color-primary, 0.08);
+  }
+
+  &:active {
+    transform: scale(0.92);
   }
 }
 
 .modal__body {
   padding: $space-lg;
-}
-
-@keyframes modal-in {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }

@@ -1,5 +1,6 @@
 @use "../../variables" as *;
 @use "../../mixins" as *;
+@use "../../motion" as *;
 
 .expense-list {
   list-style: none;
@@ -21,8 +22,18 @@
   border: 1px solid $color-border;
   border-radius: $radius-sm;
   background: #fff;
+  @include transition(box-shadow border-color transform);
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-1px);
+  }
 
   @include mobile-down {
+    &:hover {
+      transform: none;
+    }
+
     grid-template-columns: 1fr;
     grid-template-areas:
       "main"

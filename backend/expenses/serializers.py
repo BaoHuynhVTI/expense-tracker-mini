@@ -6,6 +6,7 @@ from rest_framework import serializers
 
 from .models import (
     Category,
+    Counterparty,
     Credit,
     CreditCharge,
     CreditPayment,
@@ -17,6 +18,7 @@ from .models import (
     Wallet,
     WalletTransfer,
 )
+from .credit_billing import billing_cycle_bounds
 from .utils import compute_wallet_balance, money
 
 
@@ -257,6 +259,67 @@ class WalletTransferSerializer(serializers.ModelSerializer):
         return attrs
 
 
+def _counterparty_direction_remaining(counterparty, direction):
+    total = Decimal("0")
+    for debt in counterparty.debts.filter(direction=direction):
+        remaining = debt.principal - _sum(debt.payments.all())
+        if remaining > 0:
+            total += remaining
+    return money(total)
+
+
+class CounterpartyBriefSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Counterparty
+        fields = ("id", "name")
+        read_only_fields = fields
+
+
+class CounterpartySerializer(serializers.ModelSerializer):
+    payable_remaining = serializers.SerializerMethodField()
+    receivable_remaining = serializers.SerializerMethodField()
+    debt_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Counterparty
+        fields = (
+            "id",
+            "name",
+            "payable_remaining",
+            "receivable_remaining",
+            "debt_count",
+            "created_at",
+        )
+        read_only_fields = (
+            "id",
+            "payable_remaining",
+            "receivable_remaining",
+            "debt_count",
+            "created_at",
+        )
+
+    def get_payable_remaining(self, obj):
+        return _counterparty_direction_remaining(obj, Debt.Direction.PAYABLE)
+
+    def get_receivable_remaining(self, obj):
+        return _counterparty_direction_remaining(obj, Debt.Direction.RECEIVABLE)
+
+    def get_debt_count(self, obj):
+        return obj.debts.count()
+
+    def validate_name(self, value):
+        value = value.strip()
+        if not value:
+            raise serializers.ValidationError("Please enter a name.")
+        user = self.context["request"].user
+        qs = Counterparty.objects.filter(user=user, name__iexact=value)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError("This counterparty already exists.")
+        return value
+
+
 class DebtPaymentSerializer(serializers.ModelSerializer):
     wallet_detail = WalletSerializer(source="wallet", read_only=True)
 
@@ -288,8 +351,15 @@ class DebtPaymentSerializer(serializers.ModelSerializer):
         if wallet is not None and wallet.user_id != user.id:
             raise serializers.ValidationError({"wallet": "Invalid wallet."})
 
-        # Do not allow paying more than what remains.
         if debt is not None:
+            if debt.affects_wallet:
+                if wallet is None:
+                    raise serializers.ValidationError(
+                        {"wallet": "Please choose a wallet for this payment."}
+                    )
+            else:
+                attrs["wallet"] = None
+
             already_paid = _sum(debt.payments.exclude(pk=getattr(self.instance, "pk", None)))
             amount = attrs.get("amount", Decimal("0"))
             if already_paid + amount > debt.principal:
@@ -300,6 +370,9 @@ class DebtPaymentSerializer(serializers.ModelSerializer):
 
 
 class DebtSerializer(serializers.ModelSerializer):
+    counterparty_detail = CounterpartyBriefSerializer(
+        source="counterparty", read_only=True
+    )
     wallet_detail = WalletSerializer(source="wallet", read_only=True)
     paid = serializers.SerializerMethodField()
     remaining = serializers.SerializerMethodField()
@@ -312,6 +385,8 @@ class DebtSerializer(serializers.ModelSerializer):
             "id",
             "direction",
             "counterparty",
+            "counterparty_detail",
+            "affects_wallet",
             "wallet",
             "wallet_detail",
             "principal",
@@ -342,17 +417,38 @@ class DebtSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Amount must be greater than 0.")
         return value
 
-    def validate_counterparty(self, value):
-        value = value.strip()
-        if not value:
-            raise serializers.ValidationError("Please enter a counterparty.")
-        return value
+    def _resolved(self, attrs, field):
+        if field in attrs:
+            return attrs[field]
+        if self.instance is not None:
+            return getattr(self.instance, field)
+        return None
 
     def validate(self, attrs):
         user = self.context["request"].user
+        counterparty = attrs.get("counterparty")
+        if counterparty is not None and counterparty.user_id != user.id:
+            raise serializers.ValidationError({"counterparty": "Invalid counterparty."})
+
+        affects_wallet = self._resolved(attrs, "affects_wallet")
+        if affects_wallet is None:
+            affects_wallet = True
+            attrs["affects_wallet"] = True
+
         wallet = attrs.get("wallet")
-        if wallet is not None and wallet.user_id != user.id:
-            raise serializers.ValidationError({"wallet": "Invalid wallet."})
+        if self.instance is not None and "wallet" not in attrs:
+            wallet = self.instance.wallet
+
+        if affects_wallet:
+            if wallet is None:
+                raise serializers.ValidationError(
+                    {"wallet": "Please choose a wallet when balance is affected."}
+                )
+            if wallet.user_id != user.id:
+                raise serializers.ValidationError({"wallet": "Invalid wallet."})
+        else:
+            attrs["wallet"] = None
+
         return attrs
 
 
@@ -360,6 +456,9 @@ class CreditSerializer(serializers.ModelSerializer):
     balance = serializers.SerializerMethodField()
     available = serializers.SerializerMethodField()
     paid = serializers.SerializerMethodField()
+    cycle_charges = serializers.SerializerMethodField()
+    cycle_start = serializers.SerializerMethodField()
+    cycle_end = serializers.SerializerMethodField()
 
     class Meta:
         model = Credit
@@ -368,12 +467,25 @@ class CreditSerializer(serializers.ModelSerializer):
             "name",
             "color",
             "credit_limit",
+            "statement_day",
             "balance",
             "available",
             "paid",
+            "cycle_charges",
+            "cycle_start",
+            "cycle_end",
             "created_at",
         )
-        read_only_fields = ("id", "balance", "available", "paid", "created_at")
+        read_only_fields = (
+            "id",
+            "balance",
+            "available",
+            "paid",
+            "cycle_charges",
+            "cycle_start",
+            "cycle_end",
+            "created_at",
+        )
 
     def _charged(self, obj):
         return _sum(obj.charges)
@@ -389,6 +501,32 @@ class CreditSerializer(serializers.ModelSerializer):
 
     def get_available(self, obj):
         return money(obj.credit_limit - (self._charged(obj) - self._paid(obj)))
+
+    def _cycle_bounds(self, obj):
+        return billing_cycle_bounds(obj.statement_day)
+
+    def get_cycle_charges(self, obj):
+        start, end = self._cycle_bounds(obj)
+        qs = obj.charges.filter(charged_date__gte=start, charged_date__lte=end)
+        return money(_sum(qs))
+
+    def get_cycle_start(self, obj):
+        start, _ = self._cycle_bounds(obj)
+        return start.isoformat()
+
+    def get_cycle_end(self, obj):
+        _, end = self._cycle_bounds(obj)
+        return end.isoformat()
+
+    def validate_statement_day(self, value):
+        if value is None:
+            return 1
+        value = int(value)
+        if value < 1 or value > 28:
+            raise serializers.ValidationError(
+                "Statement day must be between 1 and 28."
+            )
+        return value
 
     def validate_name(self, value):
         value = value.strip()

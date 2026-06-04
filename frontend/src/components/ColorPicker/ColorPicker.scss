@@ -1,4 +1,5 @@
 @use "../../variables" as *;
+@use "../../motion" as *;
 
 .color-picker {
   display: flex;
@@ -20,6 +21,15 @@
   cursor: pointer;
   padding: 0;
   box-shadow: inset 0 0 0 1px rgba(63, 53, 42, 0.15);
+  @include transition(transform border-color box-shadow);
+
+  &:hover {
+    transform: scale(1.08);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 
   &--active {
     border-color: $color-text;
@@ -39,6 +49,11 @@
   color: $color-muted;
   font-weight: 700;
   overflow: hidden;
+  @include transition(transform border-color);
+
+  &:hover {
+    transform: scale(1.08);
+  }
 
   input[type="color"] {
     position: absolute;

@@ -27,7 +27,9 @@ export default function DebtList({
               >
                 {isPayable ? "I owe" : "Owed to me"}
               </span>
-              <span className="debt-card__counterparty">{debt.counterparty}</span>
+              <span className="debt-card__counterparty">
+                {debt.counterparty_detail?.name ?? "—"}
+              </span>
               {settled && <span className="badge badge--settled">Settled</span>}
               <div className="debt-card__actions">
                 <button
@@ -53,7 +55,10 @@ export default function DebtList({
                 <span className="debt-card__of"> / {formatJPY(debt.principal)}</span>
               </span>
               <span className="muted">
-                via {debt.wallet_detail?.name} · {debt.incurred_date}
+                {debt.affects_wallet && debt.wallet_detail
+                  ? `via ${debt.wallet_detail.name} · `
+                  : "tracking only · "}
+                {debt.incurred_date}
               </span>
             </div>
 
@@ -62,7 +67,8 @@ export default function DebtList({
                 {debt.payments.map((p) => (
                   <li key={p.id} className="debt-payment">
                     <span>
-                      {p.paid_date} · {formatJPY(p.amount)} · {p.wallet_detail?.name}
+                      {p.paid_date} · {formatJPY(p.amount)}
+                      {p.wallet_detail ? ` · ${p.wallet_detail.name}` : ""}
                     </span>
                     <button
                       type="button"

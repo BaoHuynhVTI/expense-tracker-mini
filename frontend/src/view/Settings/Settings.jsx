@@ -113,6 +113,9 @@ function CreditForm({ initial, submitLabel, onSubmit }) {
   const [limit, setLimit] = useState(
     initial ? String(initial.credit_limit) : ""
   );
+  const [statementDay, setStatementDay] = useState(
+    initial?.statement_day != null ? String(initial.statement_day) : "1"
+  );
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -121,9 +124,18 @@ function CreditForm({ initial, submitLabel, onSubmit }) {
     setError("");
     if (!name.trim()) return setError("Please enter a name.");
     if (!(Number(limit) > 0)) return setError("Credit limit must be greater than 0.");
+    const day = Number(statementDay);
+    if (!Number.isInteger(day) || day < 1 || day > 28) {
+      return setError("Statement close day must be between 1 and 28.");
+    }
     setBusy(true);
     try {
-      await onSubmit({ name: name.trim(), color, credit_limit: limit });
+      await onSubmit({
+        name: name.trim(),
+        color,
+        credit_limit: limit,
+        statement_day: day,
+      });
     } catch (err) {
       setError(extractError(err, "Could not save the credit card."));
       setBusy(false);
@@ -147,6 +159,16 @@ function CreditForm({ initial, submitLabel, onSubmit }) {
         step="0.01"
         value={limit}
         onChange={(e) => setLimit(e.target.value)}
+      />
+      <InputComponent
+        label="Statement close day (1–28)"
+        type="number"
+        min="1"
+        max="28"
+        step="1"
+        value={statementDay}
+        onChange={(e) => setStatementDay(e.target.value)}
+        hint="Charges are grouped by monthly cycle ending on this day."
       />
       <ColorPicker value={color} onChange={setColor} />
       <button type="submit" className="btn btn--primary" disabled={busy}>
@@ -299,7 +321,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="settings">
+    <div className="page settings">
       {error && <div className="alert alert--error">{error}</div>}
       <div className="settings__stack">
         <Panel
@@ -320,7 +342,9 @@ export default function Settings() {
           actions={creditActions}
           FormComponent={CreditForm}
           formProps={{}}
-          renderMeta={(c) => `${formatJPY(c.balance)} / ${formatJPY(c.credit_limit)}`}
+          renderMeta={(c) =>
+            `${formatJPY(c.available)} avail · cycle ${formatJPY(c.cycle_charges)}`
+          }
           describe={(c) => `Delete credit card "${c?.name}"? It can't be deleted while it has charges.`}
         />
         <Panel

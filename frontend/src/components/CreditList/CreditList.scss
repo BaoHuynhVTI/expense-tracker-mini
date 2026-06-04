@@ -1,4 +1,5 @@
 @use "../../variables" as *;
+@use "../../motion" as *;
 
 .credit-list {
   list-style: none;
@@ -17,6 +18,12 @@
   display: flex;
   flex-direction: column;
   gap: $space-sm;
+  @include transition(box-shadow border-color transform);
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-1px);
+  }
 }
 
 .credit-card__top {
@@ -56,6 +63,12 @@
   font-size: 0.9rem;
   font-weight: 500;
   color: $color-muted;
+}
+
+.credit-card__cycle {
+  display: block;
+  font-size: 0.78rem;
+  margin-top: $space-xs;
 }
 
 .credit-card__entries {
@@ -98,8 +111,13 @@
   font-size: 0.95rem;
   line-height: 1;
   cursor: pointer;
+  @include transition(color transform);
 
   &:hover {
     color: $color-danger;
+  }
+
+  &:active {
+    transform: scale(0.9);
   }
 }

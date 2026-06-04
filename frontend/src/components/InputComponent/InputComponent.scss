@@ -1,4 +1,5 @@
 @use "../../variables" as *;
+@use "../../motion" as *;
 
 // Base .input-field styles live in global.scss (shared primitive).
 // Component-specific tweaks only.
@@ -31,9 +32,15 @@ textarea.input-field__control {
   color: $color-muted;
   cursor: pointer;
   border-radius: $radius-sm;
+  @include transition(color background-color transform);
 
   &:hover {
     color: $color-text;
+    background: rgba($color-primary, 0.06);
+  }
+
+  &:active {
+    transform: scale(0.92);
   }
 
   &:focus-visible {

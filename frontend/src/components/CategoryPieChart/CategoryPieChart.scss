@@ -1,6 +1,8 @@
 @use "../../variables" as *;
+@use "../../motion" as *;
 
 .category-pie-chart {
+  @include animate-fade-in($motion-base);
   width: 100%;
 
   .recharts-default-legend {
@@ -23,6 +25,7 @@
   border-radius: $radius-sm;
   font-size: 0.85rem;
   box-shadow: 0 4px 12px rgba(74, 63, 53, 0.12);
+  @include animate-fade-in($motion-fast);
 }
 
 .category-pie-chart__tooltip-name {

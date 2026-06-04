@@ -1,7 +1,9 @@
 @use "../../variables" as *;
 @use "../../mixins" as *;
+@use "../../motion" as *;
 
 .auth-page {
+  @include animate-fade-slide-up($motion-slow);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -43,7 +45,7 @@
   font-weight: 600;
   color: $color-muted;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  @include transition(background color border-color transform);
 
   &.is-active {
     background: $color-surface;

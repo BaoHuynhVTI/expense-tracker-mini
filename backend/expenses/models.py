@@ -105,6 +105,24 @@ class Income(models.Model):
         return f"{self.title} ({self.amount})"
 
 
+class Counterparty(models.Model):
+    """Someone you borrow from or lend to (debt actor)."""
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="counterparties"
+    )
+    name = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name"]
+        unique_together = ("user", "name")
+        verbose_name_plural = "counterparties"
+
+    def __str__(self):
+        return self.name
+
+
 class Debt(models.Model):
     """A debt the user owes (payable) or is owed (receivable).
 
@@ -118,9 +136,17 @@ class Debt(models.Model):
         RECEIVABLE = "receivable", "Receivable"  # I lent -> owed to me
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="debts")
-    wallet = models.ForeignKey(Wallet, on_delete=models.PROTECT, related_name="debts")
+    counterparty = models.ForeignKey(
+        Counterparty, on_delete=models.PROTECT, related_name="debts"
+    )
+    wallet = models.ForeignKey(
+        Wallet, on_delete=models.PROTECT, related_name="debts", null=True, blank=True
+    )
+    affects_wallet = models.BooleanField(
+        default=True,
+        help_text="When true, principal adjusts the linked wallet balance.",
+    )
     direction = models.CharField(max_length=12, choices=Direction.choices)
-    counterparty = models.CharField(max_length=100)
     principal = models.DecimalField(max_digits=12, decimal_places=2)
     note = models.TextField(blank=True)
     incurred_date = models.DateField()
@@ -130,7 +156,7 @@ class Debt(models.Model):
         ordering = ["-incurred_date", "-created_at"]
 
     def __str__(self):
-        return f"{self.get_direction_display()} {self.counterparty} ({self.principal})"
+        return f"{self.get_direction_display()} {self.counterparty.name} ({self.principal})"
 
 
 class DebtPayment(models.Model):
@@ -141,7 +167,11 @@ class DebtPayment(models.Model):
     )
     debt = models.ForeignKey(Debt, on_delete=models.CASCADE, related_name="payments")
     wallet = models.ForeignKey(
-        Wallet, on_delete=models.PROTECT, related_name="debt_payments"
+        Wallet,
+        on_delete=models.PROTECT,
+        related_name="debt_payments",
+        null=True,
+        blank=True,
     )
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     note = models.TextField(blank=True)
@@ -186,6 +216,8 @@ class Credit(models.Model):
     name = models.CharField(max_length=50)
     color = models.CharField(max_length=7, default="#702c37")
     credit_limit = models.DecimalField(max_digits=12, decimal_places=2)
+    # Day of month (1–28) when the statement closes; drives monthly cycle totals.
+    statement_day = models.PositiveSmallIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

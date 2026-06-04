@@ -1,5 +1,6 @@
 @use "../../variables" as *;
 @use "../../mixins" as *;
+@use "../../motion" as *;
 
 $header-height: 52px;
 
@@ -15,6 +16,7 @@ $header-height: 52px;
   background: $color-surface;
   border-bottom: 1px solid $color-border;
   box-shadow: $shadow-sm;
+  @include transition(box-shadow border-color);
 }
 
 .app-header__left {
@@ -36,6 +38,7 @@ $header-height: 52px;
   border-radius: $radius-sm;
   background: transparent;
   cursor: pointer;
+  @include transition(background-color transform);
 
   @include tablet-down {
     display: flex;
@@ -43,6 +46,10 @@ $header-height: 52px;
 
   &:hover {
     background: rgba($color-primary, 0.08);
+  }
+
+  &:active {
+    transform: scale(0.94);
   }
 }
 
@@ -65,6 +72,7 @@ $header-height: 52px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  @include animate-fade-in($motion-fast);
 }
 
 .app-header__right {

@@ -1,5 +1,6 @@
 @use "../../variables" as *;
 @use "../../mixins" as *;
+@use "../../motion" as *;
 
 .expense-form {
   display: flex;
@@ -17,9 +18,24 @@
   font-size: 0.82rem;
 }
 
-.expense-form__hint {
-  margin: 0;
-  font-size: 0.82rem;
+.debt-form__check {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-weight: 600;
+  cursor: pointer;
+  @include transition(color opacity);
+
+  input {
+    width: 1rem;
+    height: 1rem;
+    accent-color: $color-primary;
+    @include transition(transform);
+
+    &:active {
+      transform: scale(0.92);
+    }
+  }
 }
 
 .field-row {

@@ -1,6 +1,6 @@
 // Default layout: Sidebar (nav) + header (user) + main + Footer.
 import { useCallback, useState } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import { useAuth } from "../../context/AuthContext.jsx";
 import AppHeader from "../AppHeader/AppHeader.jsx";
@@ -11,6 +11,7 @@ import "./DefaultLayout.scss";
 
 export default function DefaultLayout() {
   const { authed, loadingUser } = useAuth();
+  const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
 
@@ -28,7 +29,7 @@ export default function DefaultLayout() {
       <div className="default-layout__body">
         <AppHeader onMenuClick={() => setSidebarOpen(true)} />
         <main className="default-layout__main">
-          <Outlet />
+          <Outlet key={location.pathname} />
         </main>
         <Footer />
       </div>

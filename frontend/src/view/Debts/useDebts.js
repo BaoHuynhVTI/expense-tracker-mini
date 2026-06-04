@@ -1,12 +1,15 @@
-// Debts page data: debts + wallets, with create/delete + repayments.
+// Debts page data: debts, wallets, counterparties, with CRUD + repayments.
 import { useCallback, useEffect, useState } from "react";
 
 import { useAuth } from "../../context/AuthContext.jsx";
 import {
+  createCounterparty,
   createDebt,
   createDebtPayment,
+  deleteCounterparty,
   deleteDebt,
   deleteDebtPayment,
+  fetchCounterparties,
   fetchDebts,
   fetchWallets,
   updateDebt,
@@ -16,6 +19,7 @@ export function useDebts() {
   const { logout } = useAuth();
   const [debts, setDebts] = useState([]);
   const [wallets, setWallets] = useState([]);
+  const [counterparties, setCounterparties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -31,9 +35,14 @@ export function useDebts() {
   );
 
   const fetchAll = useCallback(async () => {
-    const [debtList, walletList] = await Promise.all([fetchDebts(), fetchWallets()]);
+    const [debtList, walletList, counterpartyList] = await Promise.all([
+      fetchDebts(),
+      fetchWallets(),
+      fetchCounterparties(),
+    ]);
     setDebts(debtList);
     setWallets(walletList);
+    setCounterparties(counterpartyList);
   }, []);
 
   const load = useCallback(async () => {
@@ -51,6 +60,22 @@ export function useDebts() {
   useEffect(() => {
     load();
   }, [load]);
+
+  const addCounterparty = useCallback(
+    async (payload) => {
+      await createCounterparty(payload);
+      await fetchAll();
+    },
+    [fetchAll]
+  );
+
+  const removeCounterparty = useCallback(
+    async (id) => {
+      await deleteCounterparty(id);
+      await fetchAll();
+    },
+    [fetchAll]
+  );
 
   const addDebt = useCallback(
     async (payload) => {
@@ -95,8 +120,11 @@ export function useDebts() {
   return {
     debts,
     wallets,
+    counterparties,
     loading,
     error,
+    addCounterparty,
+    removeCounterparty,
     addDebt,
     editDebt,
     removeDebt,

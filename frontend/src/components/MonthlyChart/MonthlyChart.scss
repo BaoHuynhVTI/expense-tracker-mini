@@ -1,6 +1,8 @@
 @use "../../variables" as *;
+@use "../../motion" as *;
 
 .monthly-chart {
+  @include animate-fade-in($motion-base);
   width: 100%;
 
   .recharts-default-legend {
@@ -35,6 +37,7 @@
   box-shadow: $shadow-md;
   font-size: 0.78rem;
   white-space: nowrap;
+  @include animate-fade-in($motion-fast);
 }
 
 .monthly-chart__tooltip-title {
