@@ -9,6 +9,7 @@
 
 .footer__inner {
   @include flex-between;
+  width: 100%;
   max-width: 1100px;
   margin: 0 auto;
   padding: $space-md $space-lg;

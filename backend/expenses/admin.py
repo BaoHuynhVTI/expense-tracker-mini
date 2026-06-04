@@ -11,6 +11,7 @@ from .models import (
     Income,
     IncomeSource,
     Wallet,
+    WalletTransfer,
 )
 
 
@@ -30,6 +31,20 @@ class IncomeSourceAdmin(admin.ModelAdmin):
 class WalletAdmin(admin.ModelAdmin):
     list_display = ("name", "initial_balance", "color", "user", "created_at")
     search_fields = ("name", "user__email")
+
+
+@admin.register(WalletTransfer)
+class WalletTransferAdmin(admin.ModelAdmin):
+    list_display = (
+        "from_wallet",
+        "to_wallet",
+        "amount",
+        "transfer_date",
+        "user",
+        "created_at",
+    )
+    list_filter = ("transfer_date",)
+    search_fields = ("note", "user__email")
 
 
 @admin.register(Expense)

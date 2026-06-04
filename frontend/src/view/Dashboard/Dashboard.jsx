@@ -9,7 +9,8 @@ import { useDashboardData } from "./useDashboard.js";
 import "./Dashboard.scss";
 
 export default function Dashboard() {
-  const { summary, wallets, credits, monthly, loading, error } = useDashboardData();
+  const { summary, wallets, credits, monthly, categories, loading, error } =
+    useDashboardData();
   const showLoading = useMinLoading(loading);
 
   if (showLoading) {
@@ -20,11 +21,14 @@ export default function Dashboard() {
     <div className="dashboard">
       {error && <div className="alert alert--error">{error}</div>}
 
-      <SummaryCards summary={summary} />
+      <SummaryCards summary={summary} wallets={wallets} />
 
       <section className="panel">
         <h2 className="panel__title">Spending by category</h2>
-        <CategoryPieChart totalsByCategory={summary?.totals_by_category} />
+        <CategoryPieChart
+          totalsByCategory={summary?.totals_by_category}
+          categories={categories}
+        />
       </section>
 
       <section className="panel">

@@ -14,6 +14,9 @@ export function extractError(err, fallback = "Something went wrong.") {
     data.category?.[0] ||
     data.source?.[0] ||
     data.wallet?.[0] ||
+    data.from_wallet?.[0] ||
+    data.to_wallet?.[0] ||
+    data.transfer_date?.[0] ||
     data.credit?.[0] ||
     data.credit_limit?.[0] ||
     data.debt?.[0] ||

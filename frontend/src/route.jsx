@@ -9,6 +9,7 @@ import Dashboard from "./view/Dashboard/Dashboard.jsx";
 import Debts from "./view/Debts/Debts.jsx";
 import Expenses from "./view/Expenses/Expenses.jsx";
 import Income from "./view/Income/Income.jsx";
+import Transfers from "./view/Transfers/Transfers.jsx";
 import Settings from "./view/Settings/Settings.jsx";
 
 const route = createBrowserRouter([
@@ -31,6 +32,10 @@ const route = createBrowserRouter([
           {
             path: "income",
             element: <Income />,
+          },
+          {
+            path: "transfers",
+            element: <Transfers />,
           },
           {
             path: "debts",

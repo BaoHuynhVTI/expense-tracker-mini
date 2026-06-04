@@ -9,9 +9,12 @@ export default function ConfirmDialog({
   message,
   confirmLabel = "Delete",
   cancelLabel = "Cancel",
+  confirmVariant = "danger",
   onConfirm,
   onCancel,
 }) {
+  const confirmClass =
+    confirmVariant === "primary" ? "btn btn--primary" : "btn btn--danger";
   const [busy, setBusy] = useState(false);
 
   const handleConfirm = async () => {
@@ -37,7 +40,7 @@ export default function ConfirmDialog({
         </button>
         <button
           type="button"
-          className="btn btn--danger"
+          className={confirmClass}
           onClick={handleConfirm}
           disabled={busy}
         >

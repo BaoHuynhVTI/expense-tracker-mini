@@ -1,7 +1,83 @@
+@use "../../variables" as *;
+
 .monthly-chart {
   width: 100%;
 
   .recharts-default-legend {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
   }
+}
+
+.monthly-chart__legend-note {
+  margin: 0 0 $space-sm;
+  font-size: 0.75rem;
+}
+
+.monthly-chart__gap-label {
+  fill: #fbf5ec;
+  font-size: 8px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.monthly-chart__gap-label--pct {
+  font-size: 7px;
+  font-weight: 600;
+}
+
+.monthly-chart__tooltip {
+  min-width: min(360px, 92vw);
+  width: max-content;
+  padding: $space-sm $space-md;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  box-shadow: $shadow-md;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.monthly-chart__tooltip-title {
+  margin: 0 0 $space-sm;
+  font-weight: 700;
+  color: $color-text;
+}
+
+.monthly-chart__tooltip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-lg;
+  margin-bottom: $space-xs;
+  white-space: nowrap;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.monthly-chart__tooltip-row--net {
+  padding-top: $space-xs;
+  margin-top: $space-xs;
+  border-top: 1px solid $color-border;
+}
+
+.monthly-chart__tooltip-label {
+  flex-shrink: 0;
+  color: $color-muted;
+  font-weight: 600;
+}
+
+.monthly-chart__tooltip-value {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: $color-text;
+}
+
+.monthly-chart__tooltip-value--up {
+  color: $color-success;
+}
+
+.monthly-chart__tooltip-value--down {
+  color: $color-danger;
 }

@@ -76,6 +76,18 @@ export const updateWallet = (id, payload) =>
 export const deleteWallet = (id) =>
   request(`/wallets/${id}/`, { method: "DELETE" });
 
+// Wallet transfers
+export const fetchWalletTransfers = () => request("/wallet-transfers/");
+
+export const createWalletTransfer = (payload) =>
+  request("/wallet-transfers/", { method: "POST", body: payload });
+
+export const updateWalletTransfer = (id, payload) =>
+  request(`/wallet-transfers/${id}/`, { method: "PATCH", body: payload });
+
+export const deleteWalletTransfer = (id) =>
+  request(`/wallet-transfers/${id}/`, { method: "DELETE" });
+
 // Credit cards
 export const fetchCredits = () => request("/credits/");
 

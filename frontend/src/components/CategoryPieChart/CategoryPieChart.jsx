@@ -1,21 +1,28 @@
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
-import { formatJPY, VINTAGE_SWATCHES } from "../../utils/format.js";
+import { DEFAULT_CATEGORY_COLOR, formatJPY } from "../../utils/format.js";
 import "./CategoryPieChart.scss";
 
-function buildChartData(totalsByCategory = {}) {
+function colorByCategoryName(categories = []) {
+  return Object.fromEntries(
+    categories.map((category) => [category.name, category.color || DEFAULT_CATEGORY_COLOR])
+  );
+}
+
+function buildChartData(totalsByCategory = {}, categories = []) {
+  const colors = colorByCategoryName(categories);
   const entries = Object.entries(totalsByCategory).map(([name, amount]) => ({
     name,
     value: Number(amount),
+    color: colors[name] || DEFAULT_CATEGORY_COLOR,
   }));
   const total = entries.reduce((sum, entry) => sum + entry.value, 0);
   if (total <= 0) return { data: [], total: 0 };
 
   const data = entries
     .sort((a, b) => b.value - a.value)
-    .map((entry, index) => ({
+    .map((entry) => ({
       ...entry,
-      color: VINTAGE_SWATCHES[index % VINTAGE_SWATCHES.length],
       percent: (entry.value / total) * 100,
     }));
 
@@ -58,8 +65,8 @@ function renderLabel({ name, percent, cx, cy, midAngle, outerRadius }) {
   );
 }
 
-export default function CategoryPieChart({ totalsByCategory }) {
-  const { data, total } = buildChartData(totalsByCategory);
+export default function CategoryPieChart({ totalsByCategory, categories = [] }) {
+  const { data, total } = buildChartData(totalsByCategory, categories);
 
   if (!data.length) {
     return <p className="muted">No category spending yet.</p>;
@@ -67,7 +74,7 @@ export default function CategoryPieChart({ totalsByCategory }) {
 
   return (
     <div className="category-pie-chart">
-      <ResponsiveContainer width="100%" height={320}>
+      <ResponsiveContainer width="100%" height={280}>
         <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
           <Pie
             data={data}

@@ -26,6 +26,8 @@ from .views import (
     SummaryView,
     WalletDetailView,
     WalletListCreateView,
+    WalletTransferDetailView,
+    WalletTransferListCreateView,
 )
 
 urlpatterns = [
@@ -44,6 +46,16 @@ urlpatterns = [
     ),
     path("wallets/", WalletListCreateView.as_view(), name="wallet-list-create"),
     path("wallets/<int:pk>/", WalletDetailView.as_view(), name="wallet-detail"),
+    path(
+        "wallet-transfers/",
+        WalletTransferListCreateView.as_view(),
+        name="wallet-transfer-list-create",
+    ),
+    path(
+        "wallet-transfers/<int:pk>/",
+        WalletTransferDetailView.as_view(),
+        name="wallet-transfer-detail",
+    ),
     path("credits/", CreditListCreateView.as_view(), name="credit-list-create"),
     path(
         "credits/activity/",

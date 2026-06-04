@@ -15,8 +15,9 @@ from .models import (
     Income,
     IncomeSource,
     Wallet,
+    WalletTransfer,
 )
-from .utils import money
+from .utils import compute_wallet_balance, money
 
 
 def _sum(queryset, field="amount"):
@@ -88,28 +89,7 @@ class WalletSerializer(serializers.ModelSerializer):
         return money(_sum(obj.incomes))
 
     def get_balance(self, obj):
-        expenses = _sum(obj.expenses)
-        incomes = _sum(obj.incomes)
-        borrowed = _sum(obj.debts.filter(direction=Debt.Direction.PAYABLE), "principal")
-        lent = _sum(obj.debts.filter(direction=Debt.Direction.RECEIVABLE), "principal")
-        repaid = _sum(
-            obj.debt_payments.filter(debt__direction=Debt.Direction.PAYABLE)
-        )
-        collected = _sum(
-            obj.debt_payments.filter(debt__direction=Debt.Direction.RECEIVABLE)
-        )
-        credit_bills = _sum(obj.credit_payments)
-        balance = (
-            obj.initial_balance
-            + incomes
-            - expenses
-            + borrowed
-            - lent
-            - repaid
-            + collected
-            - credit_bills
-        )
-        return money(balance)
+        return money(compute_wallet_balance(obj))
 
     def validate_name(self, value):
         value = value.strip()
@@ -210,6 +190,70 @@ class IncomeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"source": "Invalid income source."})
         if wallet is not None and wallet.user_id != user.id:
             raise serializers.ValidationError({"wallet": "Invalid wallet."})
+        return attrs
+
+
+class WalletTransferSerializer(serializers.ModelSerializer):
+    from_wallet_detail = WalletSerializer(source="from_wallet", read_only=True)
+    to_wallet_detail = WalletSerializer(source="to_wallet", read_only=True)
+
+    class Meta:
+        model = WalletTransfer
+        fields = (
+            "id",
+            "from_wallet",
+            "from_wallet_detail",
+            "to_wallet",
+            "to_wallet_detail",
+            "amount",
+            "note",
+            "transfer_date",
+            "created_at",
+        )
+        read_only_fields = ("id", "created_at")
+
+    def validate_amount(self, value):
+        if value is None or value <= 0:
+            raise serializers.ValidationError("Amount must be greater than 0.")
+        return value
+
+    def _resolved(self, attrs, field):
+        if field in attrs:
+            return attrs[field]
+        if self.instance is not None:
+            return getattr(self.instance, field)
+        return None
+
+    def validate(self, attrs):
+        user = self.context["request"].user
+        from_wallet = self._resolved(attrs, "from_wallet")
+        to_wallet = self._resolved(attrs, "to_wallet")
+        amount = self._resolved(attrs, "amount")
+
+        if from_wallet is not None and from_wallet.user_id != user.id:
+            raise serializers.ValidationError(
+                {"from_wallet": "Invalid source wallet."}
+            )
+        if to_wallet is not None and to_wallet.user_id != user.id:
+            raise serializers.ValidationError(
+                {"to_wallet": "Invalid destination wallet."}
+            )
+        if from_wallet is not None and to_wallet is not None:
+            if from_wallet.pk == to_wallet.pk:
+                raise serializers.ValidationError(
+                    {"to_wallet": "Source and destination must be different."}
+                )
+
+        if from_wallet is not None and amount is not None:
+            balance = compute_wallet_balance(
+                from_wallet, exclude_transfer=self.instance
+            )
+            if amount > balance:
+                raise serializers.ValidationError(
+                    {
+                        "amount": "Insufficient balance in the source wallet."
+                    }
+                )
         return attrs
 
 

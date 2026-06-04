@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import Loading from "../../components/Loading/Loading.jsx";
 import ConfirmDialog from "../../components/ConfirmDialog/ConfirmDialog.jsx";
@@ -13,6 +13,8 @@ import { useMinLoading } from "../../utils/useMinLoading.js";
 import { useDebts } from "./useDebts.js";
 
 export default function Debts() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const {
     debts,
     wallets,
@@ -28,6 +30,7 @@ export default function Debts() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [debtDraft, setDebtDraft] = useState(null);
   const [repayDebt, setRepayDebt] = useState(null);
   const [deleteDebtTarget, setDeleteDebtTarget] = useState(null);
   const [deletePaymentTarget, setDeletePaymentTarget] = useState(null);
@@ -35,20 +38,37 @@ export default function Debts() {
   const ready = wallets.length > 0;
   const { page, setPage, pageCount, pageItems } = usePagination(debts, 8);
 
+  useEffect(() => {
+    const state = location.state;
+    if (!state?.openDebtCreate || !state?.debtDraft) return;
+
+    setEditing(null);
+    setDebtDraft(state.debtDraft);
+    setModalOpen(true);
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location, navigate]);
+
   const openCreate = () => {
     setEditing(null);
+    setDebtDraft(null);
     setModalOpen(true);
   };
 
   const openEdit = (debt) => {
     setEditing(debt);
+    setDebtDraft(null);
     setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setDebtDraft(null);
   };
 
   const handleSubmit = async (payload) => {
     if (editing) await editDebt(editing.id, payload);
     else await addDebt(payload);
-    setModalOpen(false);
+    closeModal();
   };
 
   const handleRepay = async (payload) => {
@@ -97,9 +117,14 @@ export default function Debts() {
       <Modal
         open={modalOpen}
         title={editing ? "Edit debt" : "Add debt"}
-        onClose={() => setModalOpen(false)}
+        onClose={closeModal}
       >
-        <DebtForm onSubmit={handleSubmit} wallets={wallets} initial={editing} />
+        <DebtForm
+          key={editing?.id ?? (debtDraft ? `draft-${debtDraft.wallet}` : "new")}
+          onSubmit={handleSubmit}
+          wallets={wallets}
+          initial={editing ?? debtDraft}
+        />
       </Modal>
 
       <Modal

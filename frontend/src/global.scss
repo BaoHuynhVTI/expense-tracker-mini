@@ -19,7 +19,7 @@ body {
   padding: $space-sm $space-md;
   border: 1px solid transparent;
   border-radius: $radius-sm;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
@@ -66,7 +66,7 @@ body {
 // Cards
 .card {
   @include card-surface;
-  padding: $space-lg;
+  padding: $space-md;
 }
 
 // Form field primitive (used by InputComponent & SelectComponent)
@@ -97,7 +97,7 @@ body {
   padding: $space-sm $space-md;
   border: 1px solid $color-border;
   border-radius: $radius-sm;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   color: $color-text;
   background: #fff;
 
@@ -112,7 +112,7 @@ body {
 .alert {
   padding: $space-sm $space-md;
   border-radius: $radius-sm;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   margin-bottom: $space-md;
 }
 
@@ -130,7 +130,7 @@ body {
 
 .muted {
   color: $color-muted;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 // ---------------------------------------------------------------------------
@@ -138,11 +138,11 @@ body {
 // ---------------------------------------------------------------------------
 .panel {
   @include card-surface;
-  padding: $space-lg;
+  padding: $space-md;
 }
 
 .panel + .panel {
-  margin-top: $space-lg;
+  margin-top: $space-md;
 }
 
 .panel__header {
@@ -163,9 +163,17 @@ body {
 }
 
 .panel__title {
-  margin: 0 0 $space-md;
-  font-size: 1.1rem;
+  margin: 0 0 $space-sm;
+  font-size: 0.95rem;
+  font-weight: 700;
   color: $color-text;
+}
+
+.panel__subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $color-muted;
 }
 
 // Two-column "form on the left, list on the right" layout.

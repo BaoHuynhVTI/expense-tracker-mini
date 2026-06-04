@@ -155,6 +155,30 @@ class DebtPayment(models.Model):
         return f"Payment {self.amount} for debt #{self.debt_id}"
 
 
+class WalletTransfer(models.Model):
+    """Move money between two wallets (not income or spending)."""
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="wallet_transfers"
+    )
+    from_wallet = models.ForeignKey(
+        Wallet, on_delete=models.PROTECT, related_name="transfers_out"
+    )
+    to_wallet = models.ForeignKey(
+        Wallet, on_delete=models.PROTECT, related_name="transfers_in"
+    )
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    note = models.TextField(blank=True)
+    transfer_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-transfer_date", "-created_at"]
+
+    def __str__(self):
+        return f"{self.amount} from #{self.from_wallet_id} to #{self.to_wallet_id}"
+
+
 class Credit(models.Model):
     """A user-defined credit card with a spending limit."""
 

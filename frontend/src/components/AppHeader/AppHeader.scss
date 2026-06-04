@@ -1,0 +1,87 @@
+@use "../../variables" as *;
+@use "../../mixins" as *;
+
+$header-height: 52px;
+
+.app-header {
+  @include flex-between;
+  position: sticky;
+  top: 0;
+  z-index: 25;
+  flex-shrink: 0;
+  gap: $space-md;
+  min-height: $header-height;
+  padding: $space-sm $space-lg;
+  background: $color-surface;
+  border-bottom: 1px solid $color-border;
+  box-shadow: $shadow-sm;
+}
+
+.app-header__left {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  min-width: 0;
+}
+
+.app-header__menu {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: $radius-sm;
+  background: transparent;
+  cursor: pointer;
+
+  @include tablet-down {
+    display: flex;
+  }
+
+  &:hover {
+    background: rgba($color-primary, 0.08);
+  }
+}
+
+.app-header__menu-icon {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: $color-text;
+  border-radius: 1px;
+  box-shadow:
+    0 -6px 0 $color-text,
+    0 6px 0 $color-text;
+}
+
+.app-header__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $color-text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-header__right {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: $space-md;
+}
+
+.app-header__email {
+  font-size: 0.8rem;
+  color: $color-muted;
+
+  @include mobile-down {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

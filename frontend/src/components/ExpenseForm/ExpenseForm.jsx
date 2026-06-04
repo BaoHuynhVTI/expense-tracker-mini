@@ -106,6 +106,7 @@ export default function ExpenseForm({
       }
     } catch (err) {
       setError(extractError(err, "Could not save."));
+    } finally {
       setSubmitting(false);
     }
   };

@@ -22,6 +22,7 @@ from .models import (
     Income,
     IncomeSource,
     Wallet,
+    WalletTransfer,
 )
 from .serializers import (
     CategorySerializer,
@@ -35,6 +36,7 @@ from .serializers import (
     IncomeSerializer,
     IncomeSourceSerializer,
     WalletSerializer,
+    WalletTransferSerializer,
 )
 from .utils import money
 
@@ -134,6 +136,27 @@ class IncomeDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Income.objects.filter(user=self.request.user)
+
+
+class WalletTransferListCreateView(generics.ListCreateAPIView):
+    serializer_class = WalletTransferSerializer
+
+    def get_queryset(self):
+        return WalletTransfer.objects.filter(user=self.request.user).select_related(
+            "from_wallet", "to_wallet"
+        )
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class WalletTransferDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = WalletTransferSerializer
+
+    def get_queryset(self):
+        return WalletTransfer.objects.filter(user=self.request.user).select_related(
+            "from_wallet", "to_wallet"
+        )
 
 
 class DebtListCreateView(generics.ListCreateAPIView):

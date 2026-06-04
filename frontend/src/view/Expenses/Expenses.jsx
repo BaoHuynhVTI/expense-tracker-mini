@@ -1,5 +1,8 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import { formatJPY } from "../../utils/format.js";
+import { getWalletOverdraft } from "../../utils/walletOverdraft.js";
 
 import Loading from "../../components/Loading/Loading.jsx";
 import ConfirmDialog from "../../components/ConfirmDialog/ConfirmDialog.jsx";
@@ -13,7 +16,23 @@ import { usePagination } from "../../utils/usePagination.js";
 import { useMinLoading } from "../../utils/useMinLoading.js";
 import { filterExpenses, useExpenses } from "./useExpenses.js";
 
+function buildDebtDraftFromExpense(payload, overdraft) {
+  const shortfall =
+    Math.round((overdraft.shortfall + Number.EPSILON) * 100) / 100;
+
+  return {
+    direction: "payable",
+    principal: String(shortfall),
+    wallet: payload.wallet,
+    incurred_date: payload.spent_date,
+    note: payload.title
+      ? `Borrowed for expense: ${payload.title}`
+      : "Borrowed to cover wallet overdraft",
+  };
+}
+
 export default function Expenses() {
+  const navigate = useNavigate();
   const {
     expenses,
     categories,
@@ -32,6 +51,7 @@ export default function Expenses() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [overdraftPrompt, setOverdraftPrompt] = useState(null);
 
   const ready =
     categories.length > 0 && (wallets.length > 0 || credits.length > 0);
@@ -61,10 +81,34 @@ export default function Expenses() {
     setModalOpen(true);
   };
 
-  const handleSubmit = async (payload) => {
+  const saveExpense = async (payload) => {
     if (editing) await editExpense(editing.id, payload);
     else await addExpense(payload);
     setModalOpen(false);
+  };
+
+  const handleSubmit = async (payload) => {
+    if (!editing && payload.payType === "wallet") {
+      const overdraft = getWalletOverdraft(wallets, payload.wallet, payload.amount);
+      if (overdraft) {
+        setOverdraftPrompt({ payload, overdraft });
+        return;
+      }
+    }
+    await saveExpense(payload);
+  };
+
+  const confirmOverdraft = async () => {
+    if (!overdraftPrompt) return;
+    const { payload, overdraft } = overdraftPrompt;
+    await saveExpense(payload);
+    setOverdraftPrompt(null);
+    navigate("/debts", {
+      state: {
+        openDebtCreate: true,
+        debtDraft: buildDebtDraftFromExpense(payload, overdraft),
+      },
+    });
   };
 
   if (showLoading) {
@@ -131,6 +175,27 @@ export default function Expenses() {
           initial={editing}
         />
       </Modal>
+
+      <ConfirmDialog
+        open={Boolean(overdraftPrompt)}
+        title="Insufficient wallet balance"
+        message={
+          overdraftPrompt
+            ? `Wallet "${overdraftPrompt.overdraft.wallet.name}" has ${formatJPY(
+                overdraftPrompt.overdraft.balance
+              )} left. Spending ${formatJPY(
+                overdraftPrompt.overdraft.expenseAmount
+              )} will leave it ${formatJPY(
+                -overdraftPrompt.overdraft.shortfall
+              )} — record a debt (money borrowed from someone). Save the expense and open Debts to add one?`
+            : ""
+        }
+        confirmLabel="Confirm"
+        cancelLabel="Cancel"
+        confirmVariant="primary"
+        onCancel={() => setOverdraftPrompt(null)}
+        onConfirm={confirmOverdraft}
+      />
 
       <ConfirmDialog
         open={Boolean(deleteTarget)}

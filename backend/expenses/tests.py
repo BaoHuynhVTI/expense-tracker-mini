@@ -121,6 +121,66 @@ class WalletTests(APITestCase):
         self.assertTrue(Wallet.objects.filter(id=wallet.id).exists())
 
 
+class WalletTransferTests(APITestCase):
+    def setUp(self):
+        self.user = make_user()
+        self.client.force_authenticate(user=self.user)
+        self.cash = Wallet.objects.create(
+            user=self.user, name="Cash", initial_balance="5000.00"
+        )
+        self.bank = Wallet.objects.create(
+            user=self.user, name="Bank", initial_balance="10000.00"
+        )
+
+    def test_transfer_updates_balances(self):
+        url = reverse("wallet-transfer-list-create")
+        response = self.client.post(
+            url,
+            {
+                "from_wallet": self.cash.id,
+                "to_wallet": self.bank.id,
+                "amount": "1500.00",
+                "transfer_date": "2026-06-01",
+                "note": "Top up bank",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        cash = self.client.get(reverse("wallet-detail", args=[self.cash.id])).data
+        bank = self.client.get(reverse("wallet-detail", args=[self.bank.id])).data
+        self.assertEqual(cash["balance"], "3500.00")
+        self.assertEqual(bank["balance"], "11500.00")
+
+    def test_cannot_transfer_to_same_wallet(self):
+        url = reverse("wallet-transfer-list-create")
+        response = self.client.post(
+            url,
+            {
+                "from_wallet": self.cash.id,
+                "to_wallet": self.cash.id,
+                "amount": "100.00",
+                "transfer_date": "2026-06-01",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_cannot_transfer_more_than_source_balance(self):
+        url = reverse("wallet-transfer-list-create")
+        response = self.client.post(
+            url,
+            {
+                "from_wallet": self.cash.id,
+                "to_wallet": self.bank.id,
+                "amount": "6000.00",
+                "transfer_date": "2026-06-01",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
 class ExpenseCreateTests(APITestCase):
     def setUp(self):
         self.user = make_user()

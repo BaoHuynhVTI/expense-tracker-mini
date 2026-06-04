@@ -1,9 +1,19 @@
 @use "../../variables" as *;
+@use "../../mixins" as *;
 
 .default-layout {
   min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: stretch;
+}
+
+.default-layout__body {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
 .default-layout__main {

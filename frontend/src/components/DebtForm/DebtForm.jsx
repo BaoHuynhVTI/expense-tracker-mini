@@ -25,6 +25,7 @@ function initialState(initial, wallets) {
 }
 
 export default function DebtForm({ onSubmit, wallets = [], initial = null }) {
+  const isEdit = Boolean(initial?.id);
   const [form, setForm] = useState(() => initialState(initial, wallets));
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -113,7 +114,7 @@ export default function DebtForm({ onSubmit, wallets = [], initial = null }) {
       />
 
       <button type="submit" className="btn btn--primary" disabled={submitting}>
-        {submitting ? "Saving..." : initial ? "Save changes" : "Add debt"}
+        {submitting ? "Saving..." : isEdit ? "Save changes" : "Add debt"}
       </button>
     </form>
   );
